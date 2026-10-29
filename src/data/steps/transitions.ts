@@ -419,8 +419,8 @@ export const TRANSITION_STEPS: Record<string, StepSpec[]> = {
           reach: {
             handL: at('head', 1, 0, 8),
             handR: at('elbowL', 1, 0, 0),
-            footL: [96, 198],
-            footR: [236, 198],
+            footL: [236, 196],
+            footR: [100, 198],
           },
         },
       ],

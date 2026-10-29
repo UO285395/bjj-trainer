@@ -74,6 +74,48 @@ const mid = (a: Point, b: Point, t = 0.5): Point => ({
 
 const DEFAULT_LAYER = { far: 0, torso: 1, near: 2 };
 
+const unit = (a: Point, b: Point): Point => {
+  const len = Math.hypot(b.x - a.x, b.y - a.y) || 1;
+  return { x: (b.x - a.x) / len, y: (b.y - a.y) / len };
+};
+const add = (p: Point, d: Point, k: number): Point => ({ x: p.x + d.x * k, y: p.y + d.y * k });
+
+/**
+ * Hacia dónde mira el pecho. Sale de la columna y del lado lejano: si el lado
+ * lejano es el izquierdo, el derecho mira al espectador, así que el pecho mira
+ * a la derecha de la columna (girada 90° en sentido horario).
+ */
+export function facing(pose: Pose): Point {
+  const j = solve(pose);
+  const up = unit(j.pelvis, j.neck);
+  const s = pose.far === 'L' ? 1 : -1;
+  return { x: -up.y * s, y: up.x * s };
+}
+
+/** Pie: una cuña corta perpendicular a la espinilla, con la punta hacia delante. */
+function footPath(knee: Point, foot: Point, forward: Point): string {
+  const shin = unit(knee, foot);
+  let perp = { x: -shin.y, y: shin.x };
+  if (perp.x * forward.x + perp.y * forward.y < 0) perp = { x: -perp.x, y: -perp.y };
+  const heel = add(add(foot, perp, -2.5), shin, 1);
+  const toe = add(add(foot, perp, 9), shin, 2.5);
+  return taperedPath([heel, mid(heel, toe), toe], [8.5, 7.5, 5.5]);
+}
+
+/** Pelo: media luna en la parte de atrás de la cabeza. */
+function hairPath(head: Point, r: number, forward: Point): string {
+  const back = Math.atan2(-forward.y, -forward.x);
+  const a1 = back - 1.75;
+  const a2 = back + 1.75;
+  const p1 = { x: head.x + Math.cos(a1) * r, y: head.y + Math.sin(a1) * r };
+  const p2 = { x: head.x + Math.cos(a2) * r, y: head.y + Math.sin(a2) * r };
+  const inner = r * 1.25;
+  return (
+    `M${f(p1.x)},${f(p1.y)} A${f(r)},${f(r)} 0 1 1 ${f(p2.x)},${f(p2.y)}` +
+    ` A${f(inner)},${f(inner)} 0 0 0 ${f(p1.x)},${f(p1.y)} Z`
+  );
+}
+
 export function poseParts(pose: Pose, palette: Palette, id: string): Part[] {
   const j = solve(pose);
   const near: Side = pose.far === 'L' ? 'R' : 'L';
@@ -81,42 +123,79 @@ export function poseParts(pose: Pose, palette: Palette, id: string): Part[] {
   const sideLayer = (s: Side) => (s === pose.far ? DEFAULT_LAYER.far : DEFAULT_LAYER.near);
   const color = (s: Side) => (s === pose.far ? palette.far : palette.main);
 
+  const forward = facing(pose);
+
   const parts: Part[] = [];
   for (const s of [pose.far, near] as Side[]) {
+    const legZ = layer(`leg${s}`, sideLayer(s));
+    const thigh = mid(j[`hip${s}`], j[`knee${s}`], 0.45);
     parts.push({
       key: `${id}-leg${s}`,
-      d: taperedPath([j[`hip${s}`], j[`knee${s}`], j[`foot${s}`]], [17, 12, 8]),
+      d: taperedPath([j[`hip${s}`], thigh, j[`knee${s}`], j[`foot${s}`]], [18, 15.5, 11, 7.5]),
       fill: color(s),
       stroke: palette.outline,
-      z: layer(`leg${s}`, sideLayer(s)),
+      z: legZ,
     });
     parts.push({
-      key: `${id}-arm${s}`,
-      d: taperedPath([j[`shoulder${s}`], j[`elbow${s}`], j[`hand${s}`]], [12, 9, 7]),
+      key: `${id}-foot${s}`,
+      d: footPath(j[`knee${s}`], j[`foot${s}`], forward),
       fill: color(s),
       stroke: palette.outline,
-      z: layer(`arm${s}`, sideLayer(s)) + 0.1,
+      z: legZ - 0.01,
+    });
+    const armZ = layer(`arm${s}`, sideLayer(s)) + 0.1;
+    const forearm = unit(j[`elbow${s}`], j[`hand${s}`]);
+    parts.push({
+      key: `${id}-arm${s}`,
+      d: taperedPath(
+        [j[`shoulder${s}`], mid(j[`shoulder${s}`], j[`elbow${s}`], 0.4), j[`elbow${s}`], j[`hand${s}`]],
+        [12.5, 11, 8.5, 6],
+      ),
+      fill: color(s),
+      stroke: palette.outline,
+      z: armZ,
+    });
+    parts.push({
+      key: `${id}-hand${s}`,
+      d: circle(add(j[`hand${s}`], forearm, 2.5), 4.4),
+      fill: color(s),
+      stroke: palette.outline,
+      z: armZ + 0.01,
     });
   }
 
-  // Tronco: de la pelvis al cuello, más ancho en el pecho.
-  const chest = mid(j.pelvis, j.neck, 0.72);
+  // Tronco: de la pelvis al cuello, cintura estrecha y pecho y hombros anchos.
+  const torsoZ = layer('torso', DEFAULT_LAYER.torso);
   parts.push({
     key: `${id}-torso`,
     d: taperedPath(
-      [j.pelvis, mid(j.pelvis, j.neck, 0.35), chest, j.neck, mid(j.neck, j.head, 0.6)],
-      [24, 21, 25, 14, 9],
+      [
+        j.pelvis,
+        mid(j.pelvis, j.neck, 0.4),
+        mid(j.pelvis, j.neck, 0.72),
+        mid(j.pelvis, j.neck, 0.92),
+        j.neck,
+        mid(j.neck, j.head, 0.6),
+      ],
+      [25, 20, 26, 24, 12, 8.5],
     ),
     fill: palette.main,
     stroke: palette.outline,
-    z: layer('torso', DEFAULT_LAYER.torso),
+    z: torsoZ,
   });
   parts.push({
     key: `${id}-head`,
     d: circle(j.head, 10.5),
     fill: palette.main,
     stroke: palette.outline,
-    z: layer('torso', DEFAULT_LAYER.torso) + 0.05,
+    z: torsoZ + 0.05,
+  });
+  parts.push({
+    key: `${id}-hair`,
+    d: hairPath(j.head, 10.5, forward),
+    fill: palette.far,
+    stroke: 'none',
+    z: torsoZ + 0.06,
   });
   return parts;
 }

@@ -85,7 +85,7 @@ export const ESCAPE_STEPS: Record<string, StepSpec[]> = {
     {
       from: 'kneeOnBelly*',
       text: 'Empuja su rodilla con las dos manos hacia su espalda.',
-      fighters: [{ reach: { handL: at('kneeR', 1, -4, -2), handR: at('kneeR', 1, 2, 2) } }],
+      fighters: [{ reach: { handL: at('kneeL', 1, -4, -2), handR: at('kneeL', 1, 2, 2) } }],
       grips: [
         [0, 'handL', 'Rodilla'],
         [0, 'handR', 'Rodilla'],
@@ -98,9 +98,9 @@ export const ESCAPE_STEPS: Record<string, StepSpec[]> = {
         {
           move: [24, 0],
           angles: { thighL: -40, shinL: 70, thighR: -30, shinR: 80 },
-          reach: { handL: at('kneeR', 1, -4, -2), handR: at('kneeR', 1, 2, 2) },
+          reach: { handL: at('kneeL', 1, -4, -2), handR: at('kneeL', 1, 2, 2) },
         },
-        { move: [-6, 6], angles: { thighR: 120, shinR: 10 } },
+        { move: [-6, 6], angles: { thighL: 120, shinL: 10 } },
       ],
       grips: [[0, 'handL', 'Rodilla']],
       arrows: [{ from: at('pelvis', 0, -10, 8), to: at('pelvis', 0, 20, 8), fighter: 0, bend: 0.2 }],
@@ -112,10 +112,10 @@ export const ESCAPE_STEPS: Record<string, StepSpec[]> = {
         {
           move: [24, 0],
           angles: { thighL: -90, shinL: 20, thighR: -50, shinR: 30 },
-          reach: { handL: at('kneeR', 1, -4, -2) },
+          reach: { handL: at('kneeL', 1, -4, -2) },
           layers: { legL: 4 },
         },
-        { move: [-6, 6], angles: { thighR: 120, shinR: 10 } },
+        { move: [-6, 6], angles: { thighL: 120, shinL: 10 } },
       ],
     },
     { from: 'closedGuard', text: 'Guardia cerrada.' },

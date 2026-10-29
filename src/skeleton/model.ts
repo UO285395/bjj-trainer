@@ -121,9 +121,15 @@ export function rotatePose(pose: Pose, delta: number): Pose {
 
 /** Espejo horizontal respecto a la línea vertical x = axis. */
 export function mirrorPose(pose: Pose, axis: number): Pose {
+  // Además de reflejar, se intercambian los lados: así la figura queda girada
+  // (mira al otro lado) y el lado lejano sigue siendo el que se dibuja detrás.
+  const swap = <T extends string>(k: T) => k.replace(/L$/, '#').replace(/R$/, 'L').replace(/#$/, 'R') as T;
   const angles = { ...pose.angles };
-  for (const b of BONE_ORDER) angles[b] = normalize(180 - angles[b]);
-  return { ...pose, x: 2 * axis - pose.x, angles };
+  for (const b of BONE_ORDER) angles[swap(b)] = normalize(180 - pose.angles[b]);
+  const layers = pose.layers
+    ? (Object.fromEntries(Object.entries(pose.layers).map(([k, v]) => [swap(k), v])) as Pose['layers'])
+    : undefined;
+  return { ...pose, x: 2 * axis - pose.x, angles, far: pose.far === 'L' ? 'R' : 'L', layers };
 }
 
 export function normalize(deg: number): number {

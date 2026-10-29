@@ -29,6 +29,7 @@ const seatedLeft = (dx: number, extra: PoseMod = {}): PoseMod => ({
   mirror: true,
   move: [dx, 0],
   ...extra,
+  angles: { spine: -82, neck: -86, ...extra.angles },
 });
 
 /** Quien ataca la pierna, tumbado de espaldas con la cabeza a la izquierda. */
@@ -208,7 +209,7 @@ export const LOCK_STEPS: Record<string, StepSpec[]> = {
     {
       from: 'kneeOnBelly',
       text: 'Cuando empuje tu rodilla, atrapa su brazo por el codo.',
-      fighters: [{ reach: { handL: at('elbowL', 1, 0, -2) } }, { reach: { handL: at('kneeR', 0, -4, 2) } }],
+      fighters: [{ reach: { handL: at('elbowL', 1, 0, -2) } }, { reach: { handL: at('kneeL', 0, -4, 2) } }],
       grips: [[0, 'handL', 'Codo']],
     },
     {
@@ -217,7 +218,7 @@ export const LOCK_STEPS: Record<string, StepSpec[]> = {
       fighters: [
         {
           move: [-28, 14],
-          angles: { spine: -80, neck: -80, thighL: 200, shinL: 110 },
+          angles: { spine: -80, neck: -80, thighR: 200, shinR: 110 },
           reach: { handL: at('handL', 1, -3), handR: at('handL', 1, 3) },
         },
         { reach: { handL: [150, 130] } },
@@ -259,11 +260,17 @@ export const LOCK_STEPS: Record<string, StepSpec[]> = {
       fighters: [
         {
           base: 'closedGuard:0',
-          rotate: -30,
-          move: [-20, -20],
-          reach: { handL: at('handL', 1, -3), handR: at('handL', 1, 3) },
+          move: [-36, 0],
+          reach: {
+            handL: at('handL', 1, -3),
+            handR: at('handL', 1, 3),
+            footL: at('neck', 1, 4, -16),
+            footR: at('pelvis', 1, -16, -14),
+          },
+          bend: { footL: -1, footR: -1 },
+          layers: { legL: 4, legR: 4 },
         },
-        { rotate: 40, move: [0, -10] },
+        { rotate: 50, move: [-4, -14] },
       ],
       grips: [[0, 'handL', 'Muñeca']],
       arrows: [{ from: [200, 110], to: [110, 180], fighter: 0, bend: 0.4 }],
@@ -525,8 +532,8 @@ export const LOCK_STEPS: Record<string, StepSpec[]> = {
         {
           base: 'kneeOnBelly:0',
           move: [-34, 4],
-          reach: { handL: at('handL', 1), footR: at('elbowL', 1, -4, 4) },
-          layers: { legR: 4 },
+          reach: { handL: at('handL', 1), footL: at('elbowL', 1, -4, 4) },
+          layers: { legL: 4 },
         },
         { reach: { handL: [150, 140] } },
       ],
@@ -540,8 +547,8 @@ export const LOCK_STEPS: Record<string, StepSpec[]> = {
           base: 'kneeOnBelly:0',
           move: [-34, 4],
           angles: { spine: -80 },
-          reach: { handL: at('handL', 1), handR: at('handL', 1, 3), footR: at('elbowL', 1, -4, 4) },
-          layers: { legR: 4 },
+          reach: { handL: at('handL', 1), handR: at('handL', 1, 3), footL: at('elbowL', 1, -4, 4) },
+          layers: { legL: 4 },
         },
         { reach: { handL: [164, 130] } },
       ],
@@ -611,7 +618,10 @@ export const LOCK_STEPS: Record<string, StepSpec[]> = {
       from: 'butterflyGuard',
       text: 'Abraza su tobillo bajo la axila, con su pie junto a tu costado.',
       fighters: [
-        { reach: { handL: at('footR', 1, 4, -6), handR: at('footR', 1, 6, -2) } },
+        {
+          angles: { spine: -104, neck: -100 },
+          reach: { handL: at('footR', 1, 4, -6), handR: at('footR', 1, 6, -2) },
+        },
         seatedLeft(105, { reach: { footR: at('shoulderL', 0, 12, 22) } }),
       ],
       grips: [[0, 'handL', 'Tobillo']],
@@ -621,6 +631,7 @@ export const LOCK_STEPS: Record<string, StepSpec[]> = {
       text: 'Pon el filo del antebrazo en su tendón de Aquiles y agarra tu solapa o tu otra mano.',
       fighters: [
         {
+          angles: { spine: -104, neck: -100 },
           reach: { handL: at('footR', 1, 10, -2), handR: at('footR', 1, 12, 2), footL: at('hipL', 1, -6, 0) },
         },
         seatedLeft(105, { reach: { footR: at('shoulderL', 0, 12, 22) } }),
@@ -658,6 +669,7 @@ export const LOCK_STEPS: Record<string, StepSpec[]> = {
       text: 'Entra en el enredo de piernas: sus rodillas atrapadas entre las tuyas.',
       fighters: [
         {
+          angles: { spine: -104, neck: -100 },
           reach: { handL: at('footR', 1, 4, -4), footL: at('hipL', 1, -4), footR: at('pelvis', 1, -2, 6) },
           layers: { legL: 4 },
         },
@@ -670,6 +682,7 @@ export const LOCK_STEPS: Record<string, StepSpec[]> = {
       text: 'Atrapa su talón en el pliegue del codo y junta las manos.',
       fighters: [
         {
+          angles: { spine: -104, neck: -100 },
           reach: {
             handL: at('footR', 1, 0, -4),
             handR: at('footR', 1, 2, 2),
@@ -711,7 +724,11 @@ export const LOCK_STEPS: Record<string, StepSpec[]> = {
       from: 'butterflyGuard',
       text: 'Enredo interior: tu pierna por dentro de la suya y el pie sobre su cadera.',
       fighters: [
-        { reach: { handL: at('footL', 1, 4, -4), footR: at('hipL', 1, -4, -4) }, layers: { legR: 4 } },
+        {
+          angles: { spine: -104, neck: -100 },
+          reach: { handL: at('footL', 1, 4, -4), footR: at('hipL', 1, -4, -4) },
+          layers: { legR: 4 },
+        },
         seatedLeft(105, { reach: { footL: at('shoulderL', 0, 12, 24) } }),
       ],
       grips: [[0, 'handL', 'Pie']],
@@ -721,6 +738,7 @@ export const LOCK_STEPS: Record<string, StepSpec[]> = {
       text: 'Atrapa su talón con el antebrazo y junta las manos sobre tu pecho.',
       fighters: [
         {
+          angles: { spine: -104, neck: -100 },
           reach: { handL: at('footL', 1, 0, -4), handR: at('footL', 1, 2, 2), footR: at('hipL', 1, -4, -4) },
           layers: { legR: 4 },
         },
@@ -795,7 +813,7 @@ export const LOCK_STEPS: Record<string, StepSpec[]> = {
       from: 'butterflyGuard',
       text: 'Agarra su pie por los dedos con la mano del lado contrario.',
       fighters: [
-        { reach: { handL: at('footR', 1, -2, -6) } },
+        { angles: { spine: -104, neck: -100 }, reach: { handL: at('footR', 1, -2, -6) } },
         seatedLeft(100, { reach: { footR: [178, 170] } }),
       ],
       grips: [[0, 'handL', 'Dedos del pie']],
@@ -804,7 +822,10 @@ export const LOCK_STEPS: Record<string, StepSpec[]> = {
       from: 'butterflyGuard',
       text: 'Pasa la otra mano por detrás de su tobillo y agarra tu muñeca (figura de cuatro).',
       fighters: [
-        { reach: { handL: at('footR', 1, -2, -6), handR: at('footR', 1, 4, 2) } },
+        {
+          angles: { spine: -104, neck: -100 },
+          reach: { handL: at('footR', 1, -2, -6), handR: at('footR', 1, 4, 2) },
+        },
         seatedLeft(100, { reach: { footR: [178, 170] } }),
       ],
       grips: [
@@ -816,7 +837,11 @@ export const LOCK_STEPS: Record<string, StepSpec[]> = {
       from: 'butterflyGuard',
       text: 'Gira su pie hacia dentro empujando los dedos hacia su glúteo.',
       fighters: [
-        { rotate: -8, reach: { handL: at('footR', 1, -2, -6), handR: at('footR', 1, 4, 2) } },
+        {
+          angles: { spine: -104, neck: -100 },
+          rotate: -8,
+          reach: { handL: at('footR', 1, -2, -6), handR: at('footR', 1, 4, 2) },
+        },
         seatedLeft(100, { reach: { footR: [178, 170] } }),
       ],
       grips: [

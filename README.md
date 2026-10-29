@@ -57,6 +57,10 @@ src/
 - Cada extremidad se dibuja como una forma continua que se estrecha, con contorno fino
   semitransparente. Las extremidades del lado lejano van detrás y en un tono apagado; el orden de
   capas se puede ajustar por extremidad (`src/skeleton/shapes.ts`).
+- Hacia dónde mira cada figura se deduce de la columna y del lado lejano: con eso se orientan los
+  pies (la punta va hacia delante) y el pelo, que marca la nuca. Las manos son un pequeño puño al
+  final del antebrazo. Reflejar una figura también intercambia sus lados, para que siga mirando
+  hacia donde se ve.
 - Las posiciones base están en `src/skeleton/poses.ts`. Cada técnica del catálogo indica de qué
   posición parte y a cuál llega; si quien ejecuta ocupa el papel del compañero en esa posición,
   los colores se intercambian para que el ejecutor tenga siempre el mismo color.

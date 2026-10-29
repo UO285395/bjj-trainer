@@ -75,11 +75,12 @@ export const SWEEP_STEPS: Record<string, StepSpec[]> = {
       text: 'Rueda hacia el lado del brazo atrapado empujando con la cadera, sin soltar la kimura.',
       fighters: [
         {
-          rotate: 52,
-          move: [18, -6],
+          base: seated,
+          move: [26, 0],
+          rotate: 16,
           reach: { handR: at('handR', 1, 3, -3), handL: at('handR', 1, -2, -6) },
         },
-        { rotate: 30, move: [16, 4], reach: { handR: [176, 140] } },
+        { rotate: 48, move: [18, 14], reach: { handR: [176, 150] } },
       ],
       grips: [
         [0, 'handR', 'Muñeca'],
@@ -275,8 +276,8 @@ export const SWEEP_STEPS: Record<string, StepSpec[]> = {
         {
           move: [10, -14],
           rotate: 10,
-          angles: { thighL: 160, shinL: 95 },
-          reach: { handR: at('kneeR', 1, 0, 4), handL: [112, 198] },
+          reach: { handR: at('kneeR', 1, 0, 4), handL: [112, 198], footL: [96, 198] },
+          bend: { footL: -1 },
         },
         { base: standingPartner },
       ],
@@ -518,8 +519,18 @@ export const SWEEP_STEPS: Record<string, StepSpec[]> = {
       from: 'butterflyGuard',
       text: 'Invierte: rueda sobre los hombros llevando la cadera por debajo de él sin soltar el pantalón.',
       fighters: [
-        { base: supineUnder, move: [40, -24], rotate: 110, reach: { handL: at('hipR', 1, 0, 10) } },
-        { base: 'backControl:1', move: [30, 6] },
+        {
+          base: supineUnder,
+          move: [34, -48],
+          rotate: -66,
+          reach: {
+            handL: at('hipR', 1, 0, 10),
+            footL: at('pelvis', 1, 16, -30),
+            footR: at('kneeL', 1, 0, -8),
+          },
+          layers: { legL: 4 },
+        },
+        { base: 'backControl:1', move: [50, 6] },
       ],
       grips: [[0, 'handL', 'Pantalón']],
       arrows: [{ from: [140, 180], to: [200, 120], fighter: 0, bend: 0.4 }],
