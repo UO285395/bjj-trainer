@@ -1,11 +1,18 @@
 import type { StepSpec } from './steps';
+import { CHOKE_STEPS } from './steps/chokes';
+import { ESCAPE_STEPS } from './steps/escapes';
+import { LOCK_STEPS } from './steps/locks';
+import { PASS_STEPS } from './steps/passes';
+import { SWEEP_STEPS } from './steps/sweeps';
+import { TAKEDOWN_STEPS } from './steps/takedowns';
+import { TRANSITION_STEPS } from './steps/transitions';
 
 // Pasos de las técnicas del catálogo. Luchador 0 = quien ejecuta, 1 = compañero.
 // Las técnicas sin entrada aquí se muestran con su posición de inicio y final.
 
 const collar = { joint: 'neck', of: 1, dx: -3, dy: 6 } as const;
 
-export const TECHNIQUE_STEPS: Record<string, StepSpec[]> = {
+const BASIC_STEPS: Record<string, StepSpec[]> = {
   'scissor-sweep': [
     {
       from: 'closedGuard',
@@ -898,4 +905,15 @@ export const TECHNIQUE_STEPS: Record<string, StepSpec[]> = {
       ],
     },
   ],
+};
+
+export const TECHNIQUE_STEPS: Record<string, StepSpec[]> = {
+  ...BASIC_STEPS,
+  ...SWEEP_STEPS,
+  ...PASS_STEPS,
+  ...LOCK_STEPS,
+  ...CHOKE_STEPS,
+  ...ESCAPE_STEPS,
+  ...TAKEDOWN_STEPS,
+  ...TRANSITION_STEPS,
 };

@@ -4,6 +4,7 @@ import {
   type Point,
   type Pose,
   currentBend,
+  mirrorPose,
   rotatePose,
   solve,
   solveTwoBone,
@@ -28,6 +29,10 @@ const CHAINS: Record<End, [Bone, Bone]> = {
 export type Target = [number, number] | { joint: Joint; of: 0 | 1; dx?: number; dy?: number };
 
 export type PoseMod = {
+  /** Toma la figura de otra posición base, p. ej. 'standing:1'. */
+  base?: `${PositionId}:${0 | 1}`;
+  /** Refleja la figura (mira hacia el otro lado) respecto a su pelvis. */
+  mirror?: boolean;
   move?: [number, number];
   rotate?: number;
   angles?: Partial<Record<Bone, number>>;
@@ -56,6 +61,11 @@ function baseFrame(from: StepSpec['from']): Frame {
 function applyBasic(pose: Pose, mod: PoseMod | undefined): Pose {
   if (!mod) return pose;
   let p = pose;
+  if (mod.base) {
+    const [id, i] = mod.base.split(':') as [PositionId, string];
+    p = POSITIONS[id].poses[Number(i)] ?? p;
+  }
+  if (mod.mirror) p = mirrorPose(p, p.x);
   if (mod.rotate) p = rotatePose(p, mod.rotate);
   if (mod.move) p = translate(p, mod.move[0], mod.move[1]);
   if (mod.angles) p = { ...p, angles: { ...p.angles, ...mod.angles } };
@@ -73,15 +83,21 @@ function resolve(t: Target, poses: Pose[]): Point {
 export function buildStep(spec: StepSpec): Frame {
   const base = baseFrame(spec.from);
   const poses = base.poses.map((p, i) => applyBasic(p, spec.fighters?.[i])) as Frame['poses'];
-  // Los alcances se resuelven después, para poder apuntar a la pose ya movida del otro.
-  spec.fighters?.forEach((mod, i) => {
-    if (!mod?.reach) return;
-    for (const [end, target] of Object.entries(mod.reach) as [End, Target][]) {
-      const [upper, lower] = CHAINS[end];
-      const bend = mod.bend?.[end] ?? currentBend(poses[i]!, upper, lower);
-      poses[i] = solveTwoBone(poses[i]!, upper, lower, resolve(target, poses), bend);
-    }
-  });
+  // Los alcances se resuelven después, para poder apuntar a la pose ya movida del
+  // otro: primero los que van a un punto fijo y luego los que siguen a una articulación.
+  const reaches = (spec.fighters ?? []).flatMap((mod, i) =>
+    Object.entries(mod?.reach ?? {}).map(([end, target]) => ({
+      i,
+      end: end as End,
+      target: target as Target,
+    })),
+  );
+  reaches.sort((a, b) => Number(!Array.isArray(a.target)) - Number(!Array.isArray(b.target)));
+  for (const { i, end, target } of reaches) {
+    const [upper, lower] = CHAINS[end];
+    const bend = spec.fighters?.[i]?.bend?.[end] ?? currentBend(poses[i]!, upper, lower);
+    poses[i] = solveTwoBone(poses[i]!, upper, lower, resolve(target, poses), bend);
+  }
   const grips: Grip[] = (spec.grips ?? []).map(([fighter, joint, label]) => ({ fighter, joint, label }));
   const arrows: Arrow[] = (spec.arrows ?? []).map((a) => ({
     from: resolve(a.from, poses),
@@ -91,3 +107,6 @@ export function buildStep(spec: StepSpec): Frame {
   }));
   return { poses, grips, arrows, caption: spec.text };
 }
+
+/** Atajo para apuntar a una articulación: at('neck', 1, -3, 6). */
+export const at = (joint: Joint, of: 0 | 1, dx = 0, dy = 0): Target => ({ joint, of, dx, dy });
