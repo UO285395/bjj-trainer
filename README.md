@@ -1,3 +1,56 @@
 # BJJ Trainer
 
-App móvil para registrar entrenamientos de Brazilian Jiu-Jitsu.
+App móvil para registrar entrenamientos de Brazilian Jiu-Jitsu, con un catálogo de técnicas
+ilustradas con siluetas y la posibilidad de crear movimientos propios dibujando las posiciones.
+
+## Qué incluye
+
+- **Entrenos**: registro de clases (fecha, tipo, duración, intensidad, rounds, notas y técnicas
+  practicadas), agrupadas por mes.
+- **Catálogo**: 131 técnicas precargadas en 7 categorías (derribos, pases, barridas, luxaciones,
+  estrangulaciones, escapes y transiciones), con búsqueda sin tildes, filtros, favoritas y notas
+  personales.
+- **Siluetas**: cada técnica muestra su posición de partida y de llegada con dos figuras (azul =
+  quien ejecuta, rojo = compañero), y se puede animar la transición.
+- **Técnicas propias**: hasta 6 pasos por técnica; cada paso parte de una posición base y se ajusta
+  arrastrando las articulaciones.
+- **Progreso**: cinturón y grados, entrenos por semana, técnicas más practicadas y repertorio por
+  categoría.
+
+Todo se guarda en el dispositivo (SQLite); no hace falta cuenta ni conexión.
+
+## Desarrollo
+
+```bash
+npm install
+npx expo start        # abre en Expo Go, emulador o navegador (tecla w)
+npm run typecheck     # TypeScript
+npx expo lint         # ESLint
+```
+
+Instala dependencias nuevas con `npx expo install <paquete>` para usar versiones compatibles con el SDK.
+
+## Estructura
+
+```
+src/
+  app/            Pantallas (Expo Router): pestañas, entreno, técnica y editor
+  components/     Visor de técnicas, editor de poses, filas y controles comunes
+  data/           Catálogo de técnicas y acceso unificado catálogo + propias
+  db/             Esquema SQLite con migraciones y consultas
+  skeleton/       Esqueleto 2D, posiciones base y generación de las siluetas SVG
+```
+
+### Esqueleto y siluetas
+
+- 15 articulaciones por figura. Una pose es la posición de la pelvis más un ángulo absoluto por
+  hueso (0° = derecha, 90° = abajo); la longitud de los huesos es fija (`src/skeleton/model.ts`).
+- Cada extremidad se dibuja como una forma continua que se estrecha, con contorno fino
+  semitransparente. Las extremidades del lado lejano van detrás y en tono claro; el orden de
+  capas se puede ajustar por extremidad (`src/skeleton/shapes.ts`).
+- Las posiciones base están en `src/skeleton/poses.ts`. Cada técnica del catálogo indica de qué
+  posición parte y a cuál llega; si quien ejecuta ocupa el papel del rojo en esa posición, los
+  colores se intercambian para que el ejecutor sea siempre azul.
+- En el editor, manos y pies se colocan con cinemática inversa de dos huesos; codos, rodillas,
+  hombros, cadera, cuello y cabeza giran su hueso y arrastran lo que cuelga de él; la pelvis
+  mueve la figura entera.
