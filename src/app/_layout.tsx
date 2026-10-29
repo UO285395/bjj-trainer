@@ -1,20 +1,38 @@
+import {
+  BarlowCondensed_600SemiBold,
+  BarlowCondensed_700Bold,
+  useFonts,
+} from '@expo-google-fonts/barlow-condensed';
 import { Stack } from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
 import { SQLiteProvider } from 'expo-sqlite';
 import { StatusBar } from 'expo-status-bar';
+import { useEffect } from 'react';
 
 import { DATABASE_NAME, migrate } from '../db/database';
-import { colors } from '../theme';
+import { colors, fonts } from '../theme';
+
+SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  const [fontsLoaded, fontError] = useFonts({ BarlowCondensed_600SemiBold, BarlowCondensed_700Bold });
+  const ready = fontsLoaded || !!fontError;
+
+  useEffect(() => {
+    if (ready) SplashScreen.hideAsync();
+  }, [ready]);
+
+  if (!ready) return null;
+
   return (
     <SQLiteProvider databaseName={DATABASE_NAME} onInit={migrate}>
-      <StatusBar style="dark" />
+      <StatusBar style="light" />
       <Stack
         screenOptions={{
           headerStyle: { backgroundColor: colors.bg },
           headerShadowVisible: false,
           headerTintColor: colors.primary,
-          headerTitleStyle: { color: colors.text },
+          headerTitleStyle: { color: colors.text, fontFamily: fonts.display, fontSize: 22 },
           contentStyle: { backgroundColor: colors.bg },
           headerBackTitle: 'Atrás',
         }}

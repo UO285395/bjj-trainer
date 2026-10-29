@@ -7,7 +7,7 @@ import { TechniquePicker } from '../../components/TechniquePicker';
 import { Button, Chip, Field, Label } from '../../components/ui';
 import { useAllTechniques } from '../../data/techniques';
 import { SESSION_KINDS, type SessionKind, getSession, saveSession } from '../../db/repo';
-import { colors } from '../../theme';
+import { colors, fonts } from '../../theme';
 import { addDays, formatRelative, today } from '../../utils/dates';
 
 const DURATIONS = [60, 75, 90, 120];
@@ -180,13 +180,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   arrowText: { fontSize: 22, color: colors.primary, lineHeight: 26 },
-  date: { fontSize: 17, fontWeight: '600', color: colors.text, minWidth: 110, textAlign: 'center' },
+  date: { fontSize: 22, fontFamily: fonts.display, color: colors.text, minWidth: 110, textAlign: 'center' },
   smallInput: {
     width: 70,
     backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 999,
+    borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 6,
     fontSize: 14,

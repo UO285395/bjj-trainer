@@ -27,7 +27,7 @@ export type TechniqueView = {
 
 export const CUSTOM_PREFIX = 'propia-';
 
-/** Fotograma de una posición base con el ejecutor siempre en azul. */
+/** Fotograma de una posición base con el ejecutor siempre como luchador 0. */
 export function positionFrame(ref: PositionRef): Frame {
   const base = POSITIONS[ref.id];
   return ref.swap ? swapFighters(base) : base;

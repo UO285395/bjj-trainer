@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { CATEGORY_LABELS, LEVEL_LABELS } from '../data/catalog';
 import type { TechniqueView } from '../data/techniques';
-import { colors } from '../theme';
+import { colors, fonts } from '../theme';
 import { FrameView } from './FrameView';
 
 type Props = {
@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 12,
     backgroundColor: colors.surface,
-    borderRadius: 14,
+    borderRadius: 10,
     padding: 8,
     paddingRight: 12,
     borderWidth: StyleSheet.hairlineWidth,
@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
   },
   selected: { borderColor: colors.primary, borderWidth: 2, padding: 7, paddingRight: 11 },
   thumb: { borderRadius: 10, overflow: 'hidden', backgroundColor: colors.mat },
-  name: { fontSize: 16, fontWeight: '600', color: colors.text },
+  name: { fontSize: 19, fontFamily: fonts.displaySemi, color: colors.text },
   tags: { fontSize: 13, color: colors.muted },
-  meta: { fontSize: 13, color: colors.primary },
+  meta: { fontSize: 13, color: colors.secondary },
 });

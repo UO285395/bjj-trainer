@@ -69,7 +69,7 @@ export type Pose = {
   x: number;
   y: number;
   angles: Record<Bone, number>;
-  /** Lado que queda más lejos del espectador: se dibuja detrás y en tono claro. */
+  /** Lado que queda más lejos del espectador: se dibuja detrás y en un tono apagado. */
   far: Side;
   /** Ajustes de capa por extremidad (mayor = más delante). */
   layers?: Partial<Record<Limb, number>>;

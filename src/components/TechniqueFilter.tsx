@@ -49,7 +49,7 @@ export function useTechniqueFilter(list: TechniqueView[]) {
 const styles = StyleSheet.create({
   search: {
     backgroundColor: colors.surface,
-    borderRadius: 12,
+    borderRadius: 8,
     borderWidth: 1,
     borderColor: colors.border,
     paddingHorizontal: 14,

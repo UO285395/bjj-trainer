@@ -88,5 +88,5 @@ const styles = StyleSheet.create({
   content: { padding: 16, gap: 8, paddingBottom: 40 },
   scopes: { flexDirection: 'row', gap: 8, flexWrap: 'wrap' },
   create: { color: colors.primary, fontSize: 16, fontWeight: '600' },
-  star: { color: '#E8A317', fontSize: 18 },
+  star: { color: colors.primary, fontSize: 18 },
 });

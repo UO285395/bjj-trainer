@@ -1,0 +1,34 @@
+  <defs>
+    <linearGradient id="band" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0" stop-color="#C9842A" stop-opacity="0"/>
+      <stop offset="0.22" stop-color="#C9842A"/>
+      <stop offset="0.78" stop-color="#C9842A"/>
+      <stop offset="1" stop-color="#C9842A" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <!-- cinturón alrededor de la cintura -->
+  <path d="M90 470 Q512 330 934 470 L934 566 Q512 426 90 566 Z" fill="url(#band)"/>
+  <g stroke="#12140F" stroke-width="16" stroke-linejoin="round">
+    <!-- punta izquierda (detrás) -->
+    <path d="M452 520 Q430 640 330 850 L222 806 Q340 620 372 500 Z" fill="#C9842A"/>
+    <path d="M378 760 L330 850 L222 806 L268 718 Z" fill="#C8372D"/>
+    <!-- punta derecha -->
+    <path d="M520 520 Q600 650 760 830 L668 896 Q540 720 448 540 Z" fill="#F2A93B"/>
+    <path d="M700 762 L760 830 L668 896 L612 822 Z" fill="#C8372D"/>
+    <!-- nudo -->
+    <path d="M392 384 Q512 352 632 384 Q652 470 626 556 Q512 584 398 556 Q372 470 392 384 Z" fill="#F2A93B"/>
+    <!-- vuelta del nudo -->
+    <path d="M392 384 Q440 371 488 365 L640 520 Q636 540 626 556 Q600 562 570 567 Z" fill="#DD9631"/>
+  </g>
+  <!-- grados -->
+  <g stroke="#EFE9DA" stroke-width="16" stroke-linecap="butt">
+    <line x1="637" y1="834.8" x2="707.7" y2="786.8"/>
+    <line x1="653.5" y1="853.6" x2="724.2" y2="805.6"/>
+  </g>
+  <!-- pespuntes -->
+  <g stroke="#12140F" stroke-opacity="0.35" stroke-width="5" stroke-dasharray="14 12" fill="none">
+    <path d="M536 552 Q600 660 668 752"/>
+    <path d="M498 560 Q556 668 630 790"/>
+    <path d="M428 540 Q412 630 362 738"/>
+    <path d="M398 530 Q378 620 318 726"/>
+  </g>

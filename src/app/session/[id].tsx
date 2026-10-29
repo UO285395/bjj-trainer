@@ -7,7 +7,7 @@ import { Button, Card, Intensity, SectionTitle } from '../../components/ui';
 import { useAllTechniques } from '../../data/techniques';
 import { deleteSession, getSession } from '../../db/repo';
 import { useFocusData } from '../../hooks/useFocusData';
-import { colors } from '../../theme';
+import { colors, fonts } from '../../theme';
 import { confirmDestructive } from '../../utils/confirm';
 import { formatDuration, formatShort } from '../../utils/dates';
 
@@ -80,7 +80,7 @@ export default function SessionScreen() {
 const styles = StyleSheet.create({
   content: { padding: 16, gap: 10, paddingBottom: 48 },
   summary: { flexDirection: 'row', alignItems: 'center' },
-  kind: { fontSize: 20, fontWeight: '700', color: colors.text },
+  kind: { fontSize: 26, fontFamily: fonts.display, color: colors.text, textTransform: 'uppercase' },
   meta: { fontSize: 15, color: colors.muted },
   notes: { fontSize: 15, color: colors.text, lineHeight: 21 },
   missing: { padding: 24, color: colors.muted, textAlign: 'center' },

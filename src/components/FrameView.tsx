@@ -44,7 +44,7 @@ function FrameViewBase({ frame, width, compact, children }: Props) {
   const ratio = compact ? THUMB_RATIO : VIEW.height / VIEW.width;
   return (
     <Svg width={width} height={width * ratio} viewBox={viewBox}>
-      <Line x1={0} y1={GROUND_Y} x2={VIEW.width} y2={GROUND_Y} stroke={colors.border} strokeWidth={2} />
+      <Line x1={0} y1={GROUND_Y} x2={VIEW.width} y2={GROUND_Y} stroke={colors.matLine} strokeWidth={2} />
       {frameParts(frame).map((p) => (
         <Path key={p.key} d={p.d} fill={p.fill} stroke={p.stroke} strokeWidth={1} strokeLinejoin="round" />
       ))}

@@ -14,8 +14,8 @@ export type Part = {
 export type Palette = { main: string; far: string; outline: string };
 
 export const FIGHTER_COLORS: Palette[] = [
-  { main: '#2F6FDE', far: '#9DB9EE', outline: 'rgba(12,30,70,0.45)' },
-  { main: '#E4572E', far: '#F2AE98', outline: 'rgba(80,20,5,0.45)' },
+  { main: '#F2A93B', far: '#9A6E2E', outline: 'rgba(0,0,0,0.45)' },
+  { main: '#3FB59A', far: '#2C7466', outline: 'rgba(0,0,0,0.45)' },
 ];
 
 const f = (n: number) => Math.round(n * 10) / 10;
@@ -141,7 +141,7 @@ export function arrowPaths(a: Arrow): { line: string; head: string } {
 
 export type Frame = { poses: [Pose, Pose] | [Pose]; arrows?: Arrow[]; caption?: string };
 
-/** Intercambia los papeles de los luchadores: el rojo pasa a ser el azul. */
+/** Intercambia los papeles de los luchadores: el compañero pasa a ser el ejecutor. */
 export function swapFighters(frame: Frame): Frame {
   if (frame.poses.length < 2) return frame;
   return {

@@ -81,7 +81,7 @@ export function TechniqueViewer({ frames, width }: { frames: Frame[]; width: num
 }
 
 const styles = StyleSheet.create({
-  wrap: { borderRadius: 14, overflow: 'hidden', backgroundColor: colors.mat },
+  wrap: { borderRadius: 10, overflow: 'hidden', backgroundColor: colors.mat },
   canvas: { alignItems: 'center' },
   bar: {
     flexDirection: 'row',

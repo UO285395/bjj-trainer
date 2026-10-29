@@ -5,7 +5,7 @@ import { Button, Card, Empty, Intensity } from '../../components/ui';
 import { useAllTechniques } from '../../data/techniques';
 import { listSessions, type Session } from '../../db/repo';
 import { useFocusData } from '../../hooks/useFocusData';
-import { colors } from '../../theme';
+import { colors, fonts } from '../../theme';
 import { formatDuration, formatRelative, monthLabel, today } from '../../utils/dates';
 
 function groupByMonth(sessions: Session[]) {
@@ -72,7 +72,9 @@ export default function SessionsScreen() {
 function Stat({ value, label }: { value: string | number; label: string }) {
   return (
     <Card style={styles.stat}>
-      <Text style={styles.statValue}>{value}</Text>
+      <Text style={styles.statValue} numberOfLines={1} adjustsFontSizeToFit>
+        {value}
+      </Text>
       <Text style={styles.statLabel}>{label}</Text>
     </Card>
   );
@@ -112,7 +114,7 @@ const styles = StyleSheet.create({
   content: { padding: 16, gap: 10, paddingBottom: 40 },
   stats: { flexDirection: 'row', gap: 10 },
   stat: { flex: 1, alignItems: 'center', paddingVertical: 12 },
-  statValue: { fontSize: 18, fontWeight: '700', color: colors.text },
+  statValue: { fontSize: 24, fontFamily: fonts.display, color: colors.primary },
   statLabel: { fontSize: 13, color: colors.muted, marginTop: 2 },
   sectionHeader: {
     flexDirection: 'row',
@@ -121,10 +123,10 @@ const styles = StyleSheet.create({
     marginTop: 14,
     marginBottom: 2,
   },
-  sectionTitle: { fontSize: 17, fontWeight: '700', color: colors.text, textTransform: 'capitalize' },
+  sectionTitle: { fontSize: 20, fontFamily: fonts.display, color: colors.text, textTransform: 'uppercase' },
   sectionMeta: { fontSize: 13, color: colors.muted },
   row: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   rowTitle: { fontSize: 16, fontWeight: '600', color: colors.text },
   rowMeta: { fontSize: 14, color: colors.muted },
-  rowTechniques: { fontSize: 14, color: colors.primary },
+  rowTechniques: { fontSize: 14, color: colors.secondary },
 });

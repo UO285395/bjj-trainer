@@ -2,7 +2,7 @@ import { type Bone, type Pose, type Side, mirrorPose } from './model';
 import type { Frame } from './shapes';
 
 // Posiciones base del catálogo. Los ángulos son absolutos: 0 = derecha,
-// 90 = abajo, -90 = arriba, 180 = izquierda. El luchador 0 (azul) suele ser
+// 90 = abajo, -90 = arriba, 180 = izquierda. El luchador 0 (ejecutor) suele ser
 // quien ejecuta la técnica.
 
 type Angles = Partial<Record<Bone, number>>;

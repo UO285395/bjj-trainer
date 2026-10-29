@@ -5,7 +5,7 @@ import { CATEGORIES, CATEGORY_LABELS } from '../../data/catalog';
 import { useAllTechniques } from '../../data/techniques';
 import { getSetting, listSessions, setSetting, techniqueUsage } from '../../db/repo';
 import { useFocusData } from '../../hooks/useFocusData';
-import { BELTS, type BeltId, colors } from '../../theme';
+import { BELTS, type BeltId, colors, fonts } from '../../theme';
 import { addDays, formatDuration, parseISODate, toISODate, today } from '../../utils/dates';
 
 const WEEKS = 8;
@@ -89,15 +89,21 @@ export default function ProgressScreen() {
 
       <View style={styles.stats}>
         <Card style={styles.stat}>
-          <Text style={styles.statValue}>{sessions.length}</Text>
+          <Text style={styles.statValue} numberOfLines={1} adjustsFontSizeToFit>
+            {sessions.length}
+          </Text>
           <Text style={styles.statLabel}>entrenos</Text>
         </Card>
         <Card style={styles.stat}>
-          <Text style={styles.statValue}>{formatDuration(minutes)}</Text>
+          <Text style={styles.statValue} numberOfLines={1} adjustsFontSizeToFit>
+            {formatDuration(minutes)}
+          </Text>
           <Text style={styles.statLabel}>en el tapiz</Text>
         </Card>
         <Card style={styles.stat}>
-          <Text style={styles.statValue}>{usage.size}</Text>
+          <Text style={styles.statValue} numberOfLines={1} adjustsFontSizeToFit>
+            {usage.size}
+          </Text>
           <Text style={styles.statLabel}>técnicas</Text>
         </Card>
       </View>
@@ -161,12 +167,12 @@ const styles = StyleSheet.create({
   },
   beltBody: { flex: 1 },
   beltTip: { width: 70, flexDirection: 'row', justifyContent: 'flex-end', gap: 5, paddingRight: 8 },
-  stripe: { width: 5, backgroundColor: '#fff' },
-  beltLabel: { fontSize: 18, fontWeight: '700', color: colors.text },
+  stripe: { width: 5, backgroundColor: '#F1EEE6' },
+  beltLabel: { fontSize: 24, fontFamily: fonts.display, color: colors.text, textTransform: 'uppercase' },
   wrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   stats: { flexDirection: 'row', gap: 10 },
   stat: { flex: 1, alignItems: 'center', paddingVertical: 12 },
-  statValue: { fontSize: 18, fontWeight: '700', color: colors.text },
+  statValue: { fontSize: 24, fontFamily: fonts.display, color: colors.primary },
   statLabel: { fontSize: 13, color: colors.muted, marginTop: 2 },
   chart: { flexDirection: 'row', alignItems: 'flex-end', gap: 8, height: 130 },
   barCol: { flex: 1, alignItems: 'center', justifyContent: 'flex-end', gap: 4 },
@@ -176,5 +182,5 @@ const styles = StyleSheet.create({
   topName: { flex: 1, fontSize: 15, color: colors.text },
   muted: { fontSize: 14, color: colors.muted },
   track: { height: 6, borderRadius: 3, backgroundColor: colors.mat, overflow: 'hidden' },
-  fill: { height: 6, backgroundColor: colors.accent },
+  fill: { height: 6, backgroundColor: colors.secondary },
 });

@@ -2,7 +2,7 @@ import { FlatList, Modal, Pressable, StyleSheet, Text, View } from 'react-native
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { TechniqueView } from '../data/techniques';
-import { colors } from '../theme';
+import { colors, fonts } from '../theme';
 import { useTechniqueFilter } from './TechniqueFilter';
 import { TechniqueRow } from './TechniqueRow';
 
@@ -64,17 +64,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 16,
   },
-  title: { fontSize: 18, fontWeight: '700', color: colors.text },
+  title: { fontSize: 24, fontFamily: fonts.display, color: colors.text, textTransform: 'uppercase' },
   done: { fontSize: 16, fontWeight: '600', color: colors.primary },
   check: {
     width: 24,
     height: 24,
-    borderRadius: 12,
+    borderRadius: 8,
     borderWidth: 2,
     borderColor: colors.border,
     alignItems: 'center',
     justifyContent: 'center',
   },
   checkOn: { backgroundColor: colors.primary, borderColor: colors.primary },
-  tick: { color: '#fff', fontWeight: '700', fontSize: 14 },
+  tick: { color: colors.onPrimary, fontWeight: '700', fontSize: 14 },
 });

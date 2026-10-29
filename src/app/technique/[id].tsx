@@ -14,7 +14,7 @@ import {
   techniqueUsage,
 } from '../../db/repo';
 import { useFocusData } from '../../hooks/useFocusData';
-import { colors } from '../../theme';
+import { colors, fonts } from '../../theme';
 import { confirmDestructive } from '../../utils/confirm';
 import { formatRelative } from '../../utils/dates';
 
@@ -61,7 +61,7 @@ export default function TechniqueScreen() {
           </Text>
         </View>
         <Pressable onPress={toggleFavorite} hitSlop={10} accessibilityLabel="Marcar como favorita">
-          <Text style={[styles.star, note.favorite && { color: '#E8A317' }]}>
+          <Text style={[styles.star, note.favorite && { color: colors.primary }]}>
             {note.favorite ? '★' : '☆'}
           </Text>
         </Pressable>
@@ -129,7 +129,13 @@ export default function TechniqueScreen() {
 const styles = StyleSheet.create({
   content: { padding: 16, gap: 12, paddingBottom: 48, width: '100%', maxWidth: 672, alignSelf: 'center' },
   titleRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 12 },
-  name: { fontSize: 24, fontWeight: '700', color: colors.text },
+  name: {
+    fontSize: 32,
+    lineHeight: 34,
+    fontFamily: fonts.display,
+    color: colors.text,
+    textTransform: 'uppercase',
+  },
   tags: { fontSize: 14, color: colors.muted },
   star: { fontSize: 28, color: colors.muted },
   description: { fontSize: 16, lineHeight: 23, color: colors.text },

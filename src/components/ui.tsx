@@ -10,7 +10,7 @@ import {
   type ViewProps,
 } from 'react-native';
 
-import { colors } from '../theme';
+import { colors, fonts } from '../theme';
 
 export function Card({ style, ...props }: ViewProps) {
   return <View style={[styles.card, style]} {...props} />;
@@ -44,8 +44,8 @@ export function Button({ title, variant = 'primary', small, style, disabled, ...
       <Text
         style={[
           styles.buttonText,
-          small && { fontSize: 14 },
-          variant === 'secondary' && { color: colors.primary },
+          small && { fontSize: 16 },
+          variant !== 'primary' && { color: variant === 'danger' ? colors.danger : colors.primary },
         ]}
       >
         {title}
@@ -112,7 +112,7 @@ export function Intensity({ value }: { value: number }) {
             height: 6 + i * 3,
             alignSelf: 'flex-end',
             borderRadius: 2,
-            backgroundColor: i <= value ? colors.accent : colors.border,
+            backgroundColor: i <= value ? colors.primary : colors.border,
           }}
         />
       ))}
@@ -123,14 +123,14 @@ export function Intensity({ value }: { value: number }) {
 export const styles = StyleSheet.create({
   card: {
     backgroundColor: colors.surface,
-    borderRadius: 14,
+    borderRadius: 10,
     padding: 14,
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: colors.border,
   },
   section: {
-    fontSize: 13,
-    fontWeight: '700',
+    fontSize: 15,
+    fontFamily: fonts.displaySemi,
     color: colors.muted,
     textTransform: 'uppercase',
     letterSpacing: 0.6,
@@ -138,26 +138,32 @@ export const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: colors.primary,
-    borderRadius: 12,
+    borderRadius: 8,
     paddingVertical: 13,
     paddingHorizontal: 18,
     alignItems: 'center',
   },
   buttonSmall: { paddingVertical: 8, paddingHorizontal: 12, borderRadius: 10 },
-  buttonSecondary: { backgroundColor: colors.primarySoft },
-  buttonDanger: { backgroundColor: colors.danger },
-  buttonText: { color: '#fff', fontWeight: '600', fontSize: 16 },
+  buttonSecondary: { backgroundColor: 'transparent', borderWidth: 1, borderColor: colors.primary },
+  buttonDanger: { backgroundColor: 'transparent', borderWidth: 1, borderColor: colors.danger },
+  buttonText: {
+    color: colors.onPrimary,
+    fontFamily: fonts.display,
+    fontSize: 19,
+    letterSpacing: 0.6,
+    textTransform: 'uppercase',
+  },
   chip: {
     paddingVertical: 7,
     paddingHorizontal: 12,
-    borderRadius: 999,
+    borderRadius: 8,
     backgroundColor: colors.surface,
     borderWidth: 1,
     borderColor: colors.border,
   },
   chipSelected: { backgroundColor: colors.primary, borderColor: colors.primary },
   chipText: { color: colors.text, fontSize: 14 },
-  chipTextSelected: { color: '#fff', fontWeight: '600' },
+  chipTextSelected: { color: colors.onPrimary, fontWeight: '700' },
   label: { fontSize: 14, fontWeight: '600', color: colors.text },
   input: {
     backgroundColor: colors.surface,
@@ -170,6 +176,6 @@ export const styles = StyleSheet.create({
     color: colors.text,
   },
   empty: { alignItems: 'center', padding: 32, gap: 6 },
-  emptyTitle: { fontSize: 17, fontWeight: '600', color: colors.text },
+  emptyTitle: { fontSize: 22, fontFamily: fonts.display, color: colors.text, textTransform: 'uppercase' },
   emptyText: { fontSize: 15, color: colors.muted, textAlign: 'center' },
 });

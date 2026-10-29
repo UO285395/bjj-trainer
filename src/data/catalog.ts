@@ -30,9 +30,9 @@ export const LEVEL_LABELS: Record<Level, string> = {
 
 /**
  * Una posición vista desde quien ejecuta la técnica. En las posiciones base el
- * azul tiene un papel concreto (abajo en las guardias, arriba en montada...).
- * Si quien ejecuta ocupa el papel del rojo, se intercambian los colores para
- * que el ejecutor siempre sea azul.
+ * luchador 0 tiene un papel concreto (abajo en las guardias, arriba en montada...).
+ * Si quien ejecuta ocupa el papel del luchador 1, se intercambian para
+ * que el ejecutor siempre sea el luchador 0.
  */
 export type PositionRef = { id: PositionId; swap: boolean };
 
@@ -46,7 +46,7 @@ export type Technique = {
   description: string;
 };
 
-// 'closedGuard' = el ejecutor hace el papel azul; 'closedGuard*' = el del rojo.
+// 'closedGuard' = el ejecutor hace el papel del luchador 0; 'closedGuard*' = el del 1.
 type Ref = PositionId | `${PositionId}*`;
 const ref = (r: Ref): PositionRef =>
   r.endsWith('*') ? { id: r.slice(0, -1) as PositionId, swap: true } : { id: r as PositionId, swap: false };

@@ -166,7 +166,7 @@ export function PoseEditor({ frame, onChange, width, onDragChange }: Props) {
                   cx={joints[j].x}
                   cy={joints[j].y}
                   r={i === fighter ? (j === 'pelvis' ? 5.5 : 4.2) : 3}
-                  fill="#fff"
+                  fill={colors.bg}
                   stroke={FIGHTER_COLORS[i].main}
                   strokeWidth={i === fighter ? 2 : 1.2}
                   opacity={i === fighter ? 1 : 0.7}
@@ -184,7 +184,7 @@ export function PoseEditor({ frame, onChange, width, onDragChange }: Props) {
         {frame.poses.map((_, i) => (
           <Chip
             key={i}
-            label={i === 0 ? 'Azul' : 'Rojo'}
+            label={i === 0 ? 'Ejecutor' : 'Compañero'}
             selected={fighter === i}
             onPress={() => setFighter(i)}
           />
@@ -219,7 +219,7 @@ export function PoseEditor({ frame, onChange, width, onDragChange }: Props) {
 }
 
 const styles = StyleSheet.create({
-  canvas: { borderRadius: 14, overflow: 'hidden', backgroundColor: colors.mat },
+  canvas: { borderRadius: 10, overflow: 'hidden', backgroundColor: colors.mat },
   hint: { color: colors.muted, fontSize: 13 },
   row: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
 });

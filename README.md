@@ -10,8 +10,8 @@ ilustradas con siluetas y la posibilidad de crear movimientos propios dibujando 
 - **Catálogo**: 131 técnicas precargadas en 7 categorías (derribos, pases, barridas, luxaciones,
   estrangulaciones, escapes y transiciones), con búsqueda sin tildes, filtros, favoritas y notas
   personales.
-- **Siluetas**: cada técnica muestra su posición de partida y de llegada con dos figuras (azul =
-  quien ejecuta, rojo = compañero), y se puede animar la transición.
+- **Siluetas**: cada técnica muestra su posición de partida y de llegada con dos figuras (azafrán =
+  quien ejecuta, jade = compañero), y se puede animar la transición.
 - **Técnicas propias**: hasta 6 pasos por técnica; cada paso parte de una posición base y se ajusta
   arrastrando las articulaciones.
 - **Progreso**: cinturón y grados, entrenos por semana, técnicas más practicadas y repertorio por
@@ -30,6 +30,13 @@ npx expo lint         # ESLint
 
 Instala dependencias nuevas con `npx expo install <paquete>` para usar versiones compatibles con el SDK.
 
+## Estilo y marca
+
+- Paleta «tatami de noche» (`src/theme.ts`): fondo tinta, tatami oliva, azafrán para acciones y
+  para quien ejecuta, jade para el compañero. Títulos en Barlow Condensed.
+- Logo: cinturón anudado con barra y dos grados (`assets/brand/logo.svg`). Los iconos de la app se
+  regeneran con `node scripts/build-brand-icons.js`.
+
 ## Estructura
 
 ```
@@ -46,11 +53,11 @@ src/
 - 15 articulaciones por figura. Una pose es la posición de la pelvis más un ángulo absoluto por
   hueso (0° = derecha, 90° = abajo); la longitud de los huesos es fija (`src/skeleton/model.ts`).
 - Cada extremidad se dibuja como una forma continua que se estrecha, con contorno fino
-  semitransparente. Las extremidades del lado lejano van detrás y en tono claro; el orden de
+  semitransparente. Las extremidades del lado lejano van detrás y en un tono apagado; el orden de
   capas se puede ajustar por extremidad (`src/skeleton/shapes.ts`).
 - Las posiciones base están en `src/skeleton/poses.ts`. Cada técnica del catálogo indica de qué
-  posición parte y a cuál llega; si quien ejecuta ocupa el papel del rojo en esa posición, los
-  colores se intercambian para que el ejecutor sea siempre azul.
+  posición parte y a cuál llega; si quien ejecuta ocupa el papel del compañero en esa posición,
+  los colores se intercambian para que el ejecutor tenga siempre el mismo color.
 - En el editor, manos y pies se colocan con cinemática inversa de dos huesos; codos, rodillas,
   hombros, cadera, cuello y cabeza giran su hueso y arrastran lo que cuelga de él; la pelvis
   mueve la figura entera.
