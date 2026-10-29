@@ -10,10 +10,11 @@ ilustradas con siluetas y la posibilidad de crear movimientos propios dibujando 
 - **Catálogo**: 131 técnicas precargadas en 7 categorías (derribos, pases, barridas, luxaciones,
   estrangulaciones, escapes y transiciones), con búsqueda sin tildes, filtros, favoritas y notas
   personales.
-- **Siluetas**: cada técnica muestra su posición de partida y de llegada con dos figuras (azafrán =
-  quien ejecuta, jade = compañero), y se puede animar la transición.
-- **Técnicas propias**: hasta 6 pasos por técnica; cada paso parte de una posición base y se ajusta
-  arrastrando las articulaciones.
+- **Siluetas paso a paso**: dos figuras (azafrán = quien ejecuta, jade = compañero). Las técnicas
+  con secuencia (`src/data/techniqueSteps.ts`) muestran cada paso con su explicación y los agarres
+  marcados; el resto, su posición de partida y de llegada. Se puede animar la transición.
+- **Técnicas propias**: hasta 6 pasos por técnica; cada paso parte de una posición base, se ajusta
+  arrastrando las articulaciones y se pueden marcar los agarres de manos y pies.
 - **Progreso**: cinturón y grados, entrenos por semana, técnicas más practicadas y repertorio por
   categoría.
 

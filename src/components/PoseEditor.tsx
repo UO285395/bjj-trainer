@@ -34,6 +34,31 @@ const IK_CHAINS: Partial<Record<Joint, [Bone, Bone]>> = {
   footR: ['thighR', 'shinR'],
 };
 
+const GRIP_LABELS = [
+  'Manga',
+  'Cuello',
+  'Solapa',
+  'Muñeca',
+  'Codo',
+  'Pantalón',
+  'Cinturón',
+  'Nuca',
+  'Underhook',
+  'Gancho',
+];
+const JOINT_NAMES: Partial<Record<Joint, string>> = {
+  handL: 'la mano izquierda',
+  handR: 'la mano derecha',
+  footL: 'el pie izquierdo',
+  footR: 'el pie derecho',
+};
+
+/** Pone, cambia o quita (label null) el agarre de una mano o pie. */
+function setGrip(frame: Frame, at: { fighter: 0 | 1; joint: Joint }, label: string | null): Frame {
+  const others = (frame.grips ?? []).filter((g) => !(g.fighter === at.fighter && g.joint === at.joint));
+  return { ...frame, grips: label ? [...others, { ...at, label }] : others };
+}
+
 const inFront = (p: Pose) => (p.layers?.torso ?? 0) > 3;
 
 /** Capas que ponen toda la figura delante de la otra, conservando su lado lejano. */
@@ -74,6 +99,8 @@ type Props = {
 export function PoseEditor({ frame, onChange, width, onDragChange }: Props) {
   const [fighter, setFighter] = useState(0);
   const [history, setHistory] = useState<Frame[]>([]);
+  // Última mano o pie tocado: es el que recibe el agarre.
+  const [grabbed, setGrabbed] = useState<{ fighter: 0 | 1; joint: Joint } | null>(null);
   const drag = useRef<Drag | null>(null);
   // El PanResponder se crea una vez: lee siempre los valores actuales desde aquí.
   const live = useRef({ frame, onChange, onDragChange, scale: width / VIEW.width });
@@ -128,7 +155,9 @@ export function PoseEditor({ frame, onChange, width, onDragChange }: Props) {
         drag.current = best;
         if (best) {
           live.current.onDragChange?.(true);
-          setFighter((best as Drag).fighter);
+          const b = best as Drag;
+          setFighter(b.fighter);
+          setGrabbed(IK_CHAINS[b.joint] ? { fighter: b.fighter as 0 | 1, joint: b.joint } : null);
           setHistory((h) => [...h.slice(-30), live.current.frame]);
         }
       },
@@ -151,6 +180,9 @@ export function PoseEditor({ frame, onChange, width, onDragChange }: Props) {
   );
 
   const pose = frame.poses[fighter] ?? frame.poses[0];
+  const currentGrip = grabbed
+    ? frame.grips?.find((g) => g.fighter === grabbed.fighter && g.joint === grabbed.joint)
+    : undefined;
   const center = solve(pose).pelvis;
 
   return (
@@ -199,6 +231,21 @@ export function PoseEditor({ frame, onChange, width, onDragChange }: Props) {
           }}
         />
       </View>
+      {grabbed && (
+        <View style={styles.row}>
+          <Text style={styles.gripTitle}>
+            Agarre de {JOINT_NAMES[grabbed.joint]} ({grabbed.fighter === 0 ? 'ejecutor' : 'compañero'}):
+          </Text>
+          {GRIP_LABELS.map((label) => (
+            <Chip
+              key={label}
+              label={label}
+              selected={currentGrip?.label === label}
+              onPress={() => commit(setGrip(frame, grabbed, currentGrip?.label === label ? null : label))}
+            />
+          ))}
+        </View>
+      )}
       <View style={styles.row}>
         <Chip label="↺ 15°" onPress={() => commit(updatePose(fighter, (p) => rotatePose(p, -15)))} />
         <Chip label="↻ 15°" onPress={() => commit(updatePose(fighter, (p) => rotatePose(p, 15)))} />
@@ -221,5 +268,6 @@ export function PoseEditor({ frame, onChange, width, onDragChange }: Props) {
 const styles = StyleSheet.create({
   canvas: { borderRadius: 10, overflow: 'hidden', backgroundColor: colors.mat },
   hint: { color: colors.muted, fontSize: 13 },
+  gripTitle: { color: colors.text, fontSize: 14, width: '100%' },
   row: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
 });

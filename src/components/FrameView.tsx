@@ -1,8 +1,8 @@
 import { memo } from 'react';
-import Svg, { G, Line, Path } from 'react-native-svg';
+import Svg, { Circle, G, Line, Path } from 'react-native-svg';
 
 import { solve } from '../skeleton/model';
-import { type Frame, FIGHTER_COLORS, VIEW, arrowPaths, frameParts } from '../skeleton/shapes';
+import { type Frame, VIEW, arrowPaths, frameParts } from '../skeleton/shapes';
 import { colors } from '../theme';
 
 export const GROUND_Y = 200;
@@ -50,12 +50,20 @@ function FrameViewBase({ frame, width, compact, children }: Props) {
       ))}
       {frame.arrows?.map((a, i) => {
         const { line, head } = arrowPaths(a);
-        const color = FIGHTER_COLORS[a.fighter].main;
+        const color = colors.text;
         return (
           <G key={i}>
             <Path d={line} fill="none" stroke={color} strokeWidth={2.2} strokeDasharray="6 5" />
             <Path d={head} fill="none" stroke={color} strokeWidth={2.2} strokeLinecap="round" />
           </G>
+        );
+      })}
+      {frame.grips?.map((g, i) => {
+        const pose = frame.poses[g.fighter];
+        if (!pose) return null;
+        const j = solve(pose)[g.joint];
+        return (
+          <Circle key={`g${i}`} cx={j.x} cy={j.y} r={5.5} fill="none" stroke={colors.text} strokeWidth={2} />
         );
       })}
       {children}

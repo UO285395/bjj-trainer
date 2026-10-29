@@ -5,6 +5,8 @@ import { useCallback, useState } from 'react';
 import { type CustomTechnique, listCustomTechniques } from '../db/repo';
 import { POSITIONS } from '../skeleton/poses';
 import { type Frame, swapFighters } from '../skeleton/shapes';
+import { buildStep } from './steps';
+import { TECHNIQUE_STEPS } from './techniqueSteps';
 import {
   CATALOG,
   CATALOG_BY_ID,
@@ -34,8 +36,12 @@ export function positionFrame(ref: PositionRef): Frame {
 }
 
 export function catalogView(t: Technique): TechniqueView {
-  const frames = [{ ...positionFrame(t.from), caption: `Desde: ${POSITIONS[t.from.id].caption}` }];
-  if (t.to) frames.push({ ...positionFrame(t.to), caption: `Hasta: ${POSITIONS[t.to.id].caption}` });
+  const steps = TECHNIQUE_STEPS[t.id];
+  const frames = steps
+    ? steps.map(buildStep)
+    : [{ ...positionFrame(t.from), caption: `Desde: ${POSITIONS[t.from.id].caption}` }];
+  if (!steps && t.to)
+    frames.push({ ...positionFrame(t.to), caption: `Hasta: ${POSITIONS[t.to.id].caption}` });
   return {
     id: t.id,
     name: t.name,

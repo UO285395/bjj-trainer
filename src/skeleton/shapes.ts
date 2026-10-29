@@ -1,4 +1,4 @@
-import { type Limb, type Point, type Pose, type Side, lerpPose, solve } from './model';
+import { type Joint, type Limb, type Point, type Pose, type Side, lerpPose, solve } from './model';
 
 // Convierte una pose en formas SVG: cada extremidad es una única forma continua
 // que se estrecha, con un contorno fino semitransparente.
@@ -139,7 +139,15 @@ export function arrowPaths(a: Arrow): { line: string; head: string } {
   };
 }
 
-export type Frame = { poses: [Pose, Pose] | [Pose]; arrows?: Arrow[]; caption?: string };
+/** Agarre: una mano o pie de un luchador sujetando algo (manga, cuello...). */
+export type Grip = { fighter: 0 | 1; joint: Joint; label: string };
+
+export type Frame = {
+  poses: [Pose, Pose] | [Pose];
+  arrows?: Arrow[];
+  grips?: Grip[];
+  caption?: string;
+};
 
 /** Intercambia los papeles de los luchadores: el compañero pasa a ser el ejecutor. */
 export function swapFighters(frame: Frame): Frame {
@@ -148,13 +156,15 @@ export function swapFighters(frame: Frame): Frame {
     ...frame,
     poses: [frame.poses[1]!, frame.poses[0]],
     arrows: frame.arrows?.map((a) => ({ ...a, fighter: a.fighter === 0 ? 1 : 0 })),
+    grips: frame.grips?.map((g) => ({ ...g, fighter: g.fighter === 0 ? 1 : 0 })),
   };
 }
 
 export function lerpFrame(a: Frame, b: Frame, t: number): Frame {
   if (a.poses.length !== b.poses.length) return t < 0.5 ? a : b;
   const poses = a.poses.map((p, i) => lerpPose(p, b.poses[i]!, t)) as Frame['poses'];
-  return { poses, arrows: t < 0.5 ? a.arrows : b.arrows, caption: t < 0.5 ? a.caption : b.caption };
+  const near = t < 0.5 ? a : b;
+  return { poses, arrows: near.arrows, grips: near.grips, caption: near.caption };
 }
 
 export const VIEW = { width: 320, height: 220 };
