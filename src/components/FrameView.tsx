@@ -1,8 +1,8 @@
 import { memo } from 'react';
-import Svg, { Circle, G, Line, Path } from 'react-native-svg';
+import Svg, { Circle, G, Line, Path, Text as SvgText } from 'react-native-svg';
 
 import { solve } from '../skeleton/model';
-import { type Frame, VIEW, arrowPaths, frameParts } from '../skeleton/shapes';
+import { FIGHTER_COLORS, type Frame, VIEW, arrowPaths, frameParts } from '../skeleton/shapes';
 import { colors } from '../theme';
 
 export const GROUND_Y = 200;
@@ -62,8 +62,31 @@ function FrameViewBase({ frame, width, compact, children }: Props) {
         const pose = frame.poses[g.fighter];
         if (!pose) return null;
         const j = solve(pose)[g.joint];
+        // Punto de contacto numerado, del color de quien agarra; el número coincide con la lista de agarres.
         return (
-          <Circle key={`g${i}`} cx={j.x} cy={j.y} r={5.5} fill="none" stroke={colors.text} strokeWidth={2} />
+          <G key={`g${i}`}>
+            <Circle cx={j.x} cy={j.y} r={9} fill={colors.text} opacity={0.18} />
+            <Circle
+              cx={j.x}
+              cy={j.y}
+              r={6}
+              fill={FIGHTER_COLORS[g.fighter].main}
+              stroke={colors.text}
+              strokeWidth={1.8}
+            />
+            {!compact && (
+              <SvgText
+                x={j.x}
+                y={j.y + 3}
+                fontSize={8}
+                fontWeight="700"
+                fill={colors.onPrimary}
+                textAnchor="middle"
+              >
+                {i + 1}
+              </SvgText>
+            )}
+          </G>
         );
       })}
       {children}

@@ -5,8 +5,8 @@ import { useCallback, useState } from 'react';
 import { type CustomTechnique, listCustomTechniques } from '../db/repo';
 import { POSITIONS } from '../skeleton/poses';
 import { type Frame, swapFighters } from '../skeleton/shapes';
-import { buildStep } from './steps';
-import { TECHNIQUE_STEPS } from './techniqueSteps';
+import { buildSteps } from './steps';
+import { TECHNIQUE_STEPS, TECHNIQUE_TWEENS } from './techniqueSteps';
 import {
   CATALOG,
   CATALOG_BY_ID,
@@ -35,13 +35,18 @@ export function positionFrame(ref: PositionRef): Frame {
   return ref.swap ? swapFighters(base) : base;
 }
 
-export function catalogView(t: Technique): TechniqueView {
+function catalogFrames(t: Technique): Frame[] {
   const steps = TECHNIQUE_STEPS[t.id];
-  const frames = steps
-    ? steps.map(buildStep)
-    : [{ ...positionFrame(t.from), caption: `Desde: ${POSITIONS[t.from.id].caption}` }];
-  if (!steps && t.to)
-    frames.push({ ...positionFrame(t.to), caption: `Hasta: ${POSITIONS[t.to.id].caption}` });
+  if (steps) return buildSteps(steps, TECHNIQUE_TWEENS[t.id]);
+  const frames = [{ ...positionFrame(t.from), caption: `Desde: ${POSITIONS[t.from.id].caption}` }];
+  if (t.to) frames.push({ ...positionFrame(t.to), caption: `Hasta: ${POSITIONS[t.to.id].caption}` });
+  return frames;
+}
+
+export function catalogView(t: Technique): TechniqueView {
+  // Los fotogramas se calculan la primera vez que se piden: con los ajustes de
+  // agarres cuesta algo, y la lista solo necesita los de las filas visibles.
+  let frames: Frame[] | undefined;
   return {
     id: t.id,
     name: t.name,
@@ -49,7 +54,10 @@ export function catalogView(t: Technique): TechniqueView {
     description: t.description,
     level: t.level,
     custom: false,
-    frames,
+    get frames() {
+      frames ??= catalogFrames(t);
+      return frames;
+    },
   };
 }
 

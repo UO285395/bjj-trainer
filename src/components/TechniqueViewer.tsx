@@ -90,7 +90,9 @@ export function TechniqueViewer({ frames, width }: { frames: Frame[]; width: num
           <View style={styles.grips}>
             {step.grips.map((g, i) => (
               <View key={i} style={styles.grip}>
-                <View style={[styles.gripDot, { borderColor: FIGHTER_COLORS[g.fighter].main }]} />
+                <View style={[styles.gripDot, { backgroundColor: FIGHTER_COLORS[g.fighter].main }]}>
+                  <Text style={styles.gripNum}>{i + 1}</Text>
+                </View>
                 <Text style={styles.gripText}>{g.label}</Text>
               </View>
             ))}
@@ -131,7 +133,16 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     backgroundColor: colors.mat,
   },
-  gripDot: { width: 10, height: 10, borderRadius: 5, borderWidth: 2 },
+  gripDot: {
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    borderWidth: 1.5,
+    borderColor: colors.text,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  gripNum: { color: colors.onPrimary, fontSize: 10, fontWeight: '700' },
   gripText: { color: colors.text, fontSize: 13 },
   play: {
     marginLeft: 4,

@@ -917,3 +917,5 @@ export const TECHNIQUE_STEPS: Record<string, StepSpec[]> = {
   ...TAKEDOWN_STEPS,
   ...TRANSITION_STEPS,
 };
+
+export { TECHNIQUE_TWEENS } from './steps/tweens';
