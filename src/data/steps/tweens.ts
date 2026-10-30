@@ -170,6 +170,25 @@ export const TECHNIQUE_TWEENS: Record<string, Tweens> = {
   'armbar-knee-on-belly': { 2: 'Siéntate junto a su hombro con su brazo pegado a tu pecho.' },
   'armbar-turtle': {
     2: 'Mete la cabeza y empieza a rodar por encima de su hombro.',
+    3: {
+      from: 'mount',
+      text: 'Termina de rodar: él cae de espaldas y tus piernas quedan sobre su pecho.',
+      fighters: [
+        {
+          base: 'closedGuard:0',
+          move: [-20, 0],
+          reach: {
+            footL: at('neck', 1, 6, -14),
+            footR: at('pelvis', 1, -10, -16),
+            handL: at('handL', 1, -3),
+          },
+          bend: { footL: -1, footR: -1 },
+          layers: { legL: 4, legR: 4 },
+        },
+        { rotate: -28, move: [-14, -20], reach: { handL: [128, 132] } },
+      ],
+      grips: [[0, 'handL', 'Muñeca']],
+    },
   },
   'kimura-turtle': { 2: 'Levanta el codo y empieza a girar su brazo hacia la espalda.' },
   omoplata: { 1: 'Gira la cadera hacia sus pies con la pierna sobre su hombro.' },
@@ -177,6 +196,38 @@ export const TECHNIQUE_TWEENS: Record<string, Tweens> = {
   kneebar: { 1: 'Pasa la pierna por encima de él y déjate caer de lado.' },
 
   // Estrangulaciones
+  darce: {
+    2: {
+      text: 'Mete el brazo hasta el fondo y siéntate sobre la cadera, girando hacia su brazo atrapado.',
+      t: 0.5,
+      fighters: [
+        {
+          base: 'butterflyGuard:0',
+          move: [-78, 0],
+          angles: { spine: -112, neck: -118, thighL: -30, shinL: 60, thighR: -20, shinR: 70 },
+          reach: { handR: at('shoulderL', 1, 16, 10), handL: at('shoulderL', 1, 6, -8) },
+        },
+        { rotate: 10 },
+      ],
+      grips: [[0, 'handR', 'Bíceps']],
+    },
+  },
+  anaconda: {
+    2: {
+      text: 'Siéntate de lado y empieza a rodar hacia el hombro del brazo atrapado, llevándolo contigo.',
+      t: 0.5,
+      fighters: [
+        {
+          base: 'butterflyGuard:0',
+          move: [-70, 0],
+          angles: { spine: -140, neck: -146, thighL: -40, shinL: 40, thighR: -25, shinR: 60 },
+          reach: { handR: at('shoulderR', 1, 18, 12), handL: at('shoulderL', 1, 8, -10) },
+        },
+        { rotate: 26, move: [-10, 0] },
+      ],
+      grips: [[0, 'handR', 'Bíceps']],
+    },
+  },
   'bow-and-arrow': { 2: 'Empieza a girar de lado tirando del cuello.' },
   'triangle-mount': { 2: 'Cae de lado llevando su cabeza contigo.' },
   'baseball-bat-choke': { 2: 'Camina alrededor de su cabeza sin soltar los agarres.' },
@@ -205,6 +256,20 @@ export const TECHNIQUE_TWEENS: Record<string, Tweens> = {
   'granby-roll': { 1: 'Apoya el hombro en el suelo y empieza a rodar.' },
   'armbar-defense': { 2: 'Ya de pie, empieza a cargar el peso hacia delante.' },
   sprawl: {
+    1: {
+      text: 'Lanza las piernas atrás mientras bajas el pecho sobre su espalda.',
+      t: 0.5,
+      fighters: [
+        {
+          base: 'turtle:0',
+          move: [26, -16],
+          angles: { spine: -150, neck: -158, thighL: 30, shinL: 50, thighR: 22, shinR: 45 },
+          reach: { handL: at('shoulderL', 1, 4, -4) },
+        },
+        { base: 'turtle:1', move: [-24, -14], rotate: -14 },
+      ],
+      grips: [[0, 'handL', 'Hombro']],
+    },
     2: 'Rodea hacia su costado sin levantar la cadera.',
   },
 
@@ -295,9 +360,71 @@ export const TECHNIQUE_TWEENS: Record<string, Tweens> = {
   },
 
   // Controles y transiciones
+  upa: {
+    2: {
+      from: 'mount*',
+      text: 'Gira sobre el hombro: cae de lado hacia el brazo atrapado.',
+      fighters: [
+        {
+          move: [0, -6],
+          angles: { spine: 200, thighL: -40, shinL: 60, thighR: -30, shinR: 50 },
+          reach: { handL: at('elbowR', 1), handR: at('handR', 1) },
+        },
+        { rotate: -60, move: [-30, 6] },
+      ],
+      grips: [
+        [0, 'handL', 'Brazo'],
+        [0, 'handR', 'Muñeca'],
+      ],
+    },
+  },
+  'side-to-north-south': {
+    2: {
+      from: 'sideControl',
+      text: 'Sigue girando alrededor de su cabeza hasta quedar en línea con él.',
+      fighters: [
+        {
+          base: 'northSouth:0',
+          rotate: -12,
+          move: [26, 0],
+          reach: { handL: at('shoulderL', 1, 0, -6), handR: at('shoulderR', 1, 4, -6) },
+        },
+      ],
+      grips: [[0, 'handL', 'Brazo']],
+    },
+  },
   'turtle-back-take': { 2: toBack('Rueda hacia un lado llevándolo contigo con el primer gancho.') },
   'mount-to-back': { 2: toBack('Rueda de lado sin soltar el cinturón de seguridad.') },
   'half-guard-back-take': {
+    1: {
+      text: 'Ponte de rodillas por debajo de él, con la cabeza pegada a su costado.',
+      t: 0.5,
+      fighters: [
+        {
+          base: 'turtle:1',
+          mirror: true,
+          move: [-4, 10],
+          rotate: 18,
+          reach: { handR: at('shoulderL', 1, 6, 14) },
+        },
+        {},
+      ],
+      grips: [[0, 'handR', 'Underhook']],
+    },
+    2: {
+      text: 'Sube por encima de su espalda sin soltar la cintura.',
+      t: 0.5,
+      fighters: [
+        {
+          base: 'turtle:0',
+          move: [-14, 4],
+          angles: { spine: -122, neck: -132 },
+          reach: { handR: at('pelvis', 1, 0, -10), handL: at('shoulderR', 1, 0, 10) },
+        },
+        {},
+      ],
+      grips: [[0, 'handR', 'Cintura']],
+    },
     3: toBack('Siéntate detrás de él con el cinturón de seguridad.'),
   },
   'arm-drag-guard': {
