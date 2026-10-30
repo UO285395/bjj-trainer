@@ -1,21 +1,53 @@
 import { type Joint, type Limb, type Point, type Pose, type Side, lerpPose, solve } from './model';
 
-// Convierte una pose en formas SVG: cada extremidad es una única forma continua
-// que se estrecha, con un contorno fino semitransparente.
+// Convierte una pose en formas SVG: cada luchador lleva un kimono de su color
+// (chaqueta, mangas y pantalón como formas continuas que se estrechan) y la
+// piel en tono claro en cara, cuello, manos y pies. Contorno fino semitransparente.
 
 export type Part = {
   key: string;
   d: string;
   fill: string;
   stroke: string;
+  /** Grosor del trazo; por defecto 1. */
+  width?: number;
   z: number;
 };
 
-export type Palette = { main: string; far: string; outline: string };
+/** `main` y `far` son el kimono (lado cercano y lejano); `skin`/`skinFar`, la piel. */
+export type Palette = {
+  main: string;
+  far: string;
+  skin: string;
+  skinFar: string;
+  /** Solapas de la chaqueta. */
+  lapel: string;
+  belt: string;
+  hair: string;
+  outline: string;
+};
 
 export const FIGHTER_COLORS: Palette[] = [
-  { main: '#F2A93B', far: '#9A6E2E', outline: 'rgba(0,0,0,0.45)' },
-  { main: '#3FB59A', far: '#2C7466', outline: 'rgba(0,0,0,0.45)' },
+  {
+    main: '#F2A93B',
+    far: '#B37A22',
+    skin: '#F6D7A6',
+    skinFar: '#BFA07A',
+    lapel: '#8C5A12',
+    belt: '#1B1B17',
+    hair: '#2A2620',
+    outline: 'rgba(0,0,0,0.5)',
+  },
+  {
+    main: '#3FB59A',
+    far: '#2A7F6B',
+    skin: '#BFE8DA',
+    skinFar: '#86AFA2',
+    lapel: '#1D6655',
+    belt: '#1B1B17',
+    hair: '#2A2620',
+    outline: 'rgba(0,0,0,0.5)',
+  },
 ];
 
 const f = (n: number) => Math.round(n * 10) / 10;
@@ -109,91 +141,143 @@ function hairPath(head: Point, r: number, forward: Point): string {
   const a2 = back + 1.75;
   const p1 = { x: head.x + Math.cos(a1) * r, y: head.y + Math.sin(a1) * r };
   const p2 = { x: head.x + Math.cos(a2) * r, y: head.y + Math.sin(a2) * r };
-  const inner = r * 1.25;
+  const inner = r * 1.7;
   return (
     `M${f(p1.x)},${f(p1.y)} A${f(r)},${f(r)} 0 1 1 ${f(p2.x)},${f(p2.y)}` +
     ` A${f(inner)},${f(inner)} 0 0 0 ${f(p1.x)},${f(p1.y)} Z`
   );
 }
 
+const line = (a: Point, b: Point) => `M${f(a.x)},${f(a.y)} L${f(b.x)},${f(b.y)}`;
+
 export function poseParts(pose: Pose, palette: Palette, id: string): Part[] {
   const j = solve(pose);
   const near: Side = pose.far === 'L' ? 'R' : 'L';
   const layer = (limb: Limb, fallback: number) => pose.layers?.[limb] ?? fallback;
   const sideLayer = (s: Side) => (s === pose.far ? DEFAULT_LAYER.far : DEFAULT_LAYER.near);
-  const color = (s: Side) => (s === pose.far ? palette.far : palette.main);
+  const gi = (s: Side) => (s === pose.far ? palette.far : palette.main);
+  const skin = (s: Side) => (s === pose.far ? palette.skinFar : palette.skin);
+  const stroke = palette.outline;
 
   const forward = facing(pose);
 
   const parts: Part[] = [];
   for (const s of [pose.far, near] as Side[]) {
+    // Pantalón hasta casi el tobillo y pie descalzo.
     const legZ = layer(`leg${s}`, sideLayer(s));
-    const thigh = mid(j[`hip${s}`], j[`knee${s}`], 0.45);
+    const hip = j[`hip${s}`];
+    const knee = j[`knee${s}`];
+    const foot = j[`foot${s}`];
+    const ankle = mid(knee, foot, 0.86);
     parts.push({
       key: `${id}-leg${s}`,
-      d: taperedPath([j[`hip${s}`], thigh, j[`knee${s}`], j[`foot${s}`]], [18, 15.5, 11, 7.5]),
-      fill: color(s),
-      stroke: palette.outline,
+      d: taperedPath([hip, mid(hip, knee, 0.45), knee, ankle], [20, 18, 15, 13]),
+      fill: gi(s),
+      stroke,
       z: legZ,
     });
     parts.push({
-      key: `${id}-foot${s}`,
-      d: footPath(j[`knee${s}`], j[`foot${s}`], forward),
-      fill: color(s),
-      stroke: palette.outline,
-      z: legZ - 0.01,
+      key: `${id}-ankle${s}`,
+      d: taperedPath([ankle, foot], [7, 7]),
+      fill: skin(s),
+      stroke,
+      z: legZ - 0.02,
     });
+    parts.push({
+      key: `${id}-foot${s}`,
+      d: footPath(knee, foot, forward),
+      fill: skin(s),
+      stroke,
+      z: legZ - 0.02,
+    });
+
+    // Manga ancha hasta la muñeca y mano.
     const armZ = layer(`arm${s}`, sideLayer(s)) + 0.1;
-    const forearm = unit(j[`elbow${s}`], j[`hand${s}`]);
+    const shoulder = j[`shoulder${s}`];
+    const elbow = j[`elbow${s}`];
+    const hand = j[`hand${s}`];
+    const wrist = mid(elbow, hand, 0.8);
     parts.push({
       key: `${id}-arm${s}`,
-      d: taperedPath(
-        [j[`shoulder${s}`], mid(j[`shoulder${s}`], j[`elbow${s}`], 0.4), j[`elbow${s}`], j[`hand${s}`]],
-        [12.5, 11, 8.5, 6],
-      ),
-      fill: color(s),
-      stroke: palette.outline,
+      d: taperedPath([shoulder, mid(shoulder, elbow, 0.5), elbow, wrist], [14, 13, 12, 11.5]),
+      fill: gi(s),
+      stroke,
       z: armZ,
     });
     parts.push({
+      key: `${id}-wrist${s}`,
+      d: taperedPath([wrist, hand], [6, 6]),
+      fill: skin(s),
+      stroke,
+      z: armZ - 0.02,
+    });
+    parts.push({
       key: `${id}-hand${s}`,
-      d: circle(add(j[`hand${s}`], forearm, 2.5), 4.4),
-      fill: color(s),
-      stroke: palette.outline,
-      z: armZ + 0.01,
+      d: circle(add(hand, unit(elbow, hand), 1.5), 4.6),
+      fill: skin(s),
+      stroke,
+      z: armZ - 0.01,
     });
   }
 
-  // Tronco: de la pelvis al cuello, cintura estrecha y pecho y hombros anchos.
+  // Chaqueta: de la pelvis al cuello, con solapas cruzadas y cinturón.
   const torsoZ = layer('torso', DEFAULT_LAYER.torso);
+  const up = unit(j.pelvis, j.neck);
+  const across = { x: -up.y, y: up.x };
   parts.push({
     key: `${id}-torso`,
     d: taperedPath(
-      [
-        j.pelvis,
-        mid(j.pelvis, j.neck, 0.4),
-        mid(j.pelvis, j.neck, 0.72),
-        mid(j.pelvis, j.neck, 0.92),
-        j.neck,
-        mid(j.neck, j.head, 0.6),
-      ],
-      [25, 20, 26, 24, 12, 8.5],
+      [j.pelvis, mid(j.pelvis, j.neck, 0.4), mid(j.pelvis, j.neck, 0.75), j.neck],
+      [27, 25, 28, 18],
     ),
     fill: palette.main,
-    stroke: palette.outline,
+    stroke,
     z: torsoZ,
+  });
+  const chest = add(mid(j.pelvis, j.neck, 0.45), forward, 6);
+  parts.push({
+    key: `${id}-lapels`,
+    d: `${line(add(j.neck, forward, 5), chest)} ${line(add(j.neck, forward, -2), add(chest, forward, 2))}`,
+    fill: 'none',
+    stroke: palette.lapel,
+    width: 2.4,
+    z: torsoZ + 0.01,
+  });
+  const waist = mid(j.pelvis, j.neck, 0.12);
+  parts.push({
+    key: `${id}-belt`,
+    d: taperedPath([add(waist, across, 13), add(waist, across, -13)], [6, 6]),
+    fill: palette.belt,
+    stroke: 'none',
+    z: torsoZ + 0.02,
+  });
+  const knot = add(mid(j.pelvis, j.neck, 0.1), forward, 12);
+  parts.push({
+    key: `${id}-knot`,
+    d: taperedPath([knot, add(add(knot, up, -9), forward, 3)], [4, 3]),
+    fill: palette.belt,
+    stroke: 'none',
+    z: torsoZ + 0.03,
+  });
+
+  parts.push({
+    key: `${id}-neck`,
+    d: taperedPath([j.neck, mid(j.neck, j.head, 0.6)], [9, 8]),
+    fill: palette.skin,
+    stroke,
+    z: torsoZ - 0.01,
   });
   parts.push({
     key: `${id}-head`,
-    d: circle(j.head, 10.5),
-    fill: palette.main,
-    stroke: palette.outline,
+    d: circle(j.head, 10),
+    fill: palette.skin,
+    stroke,
     z: torsoZ + 0.05,
   });
   parts.push({
     key: `${id}-hair`,
-    d: hairPath(j.head, 10.5, forward),
-    fill: palette.far,
+    d: hairPath(j.head, 10, forward),
+    fill: palette.hair,
     stroke: 'none',
     z: torsoZ + 0.06,
   });

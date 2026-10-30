@@ -54,7 +54,9 @@ src/
 
 - 15 articulaciones por figura. Una pose es la posición de la pelvis más un ángulo absoluto por
   hueso (0° = derecha, 90° = abajo); la longitud de los huesos es fija (`src/skeleton/model.ts`).
-- Cada extremidad se dibuja como una forma continua que se estrecha, con contorno fino
+- Cada luchador viste un kimono de su color (naranja o verde): chaqueta con solapas cruzadas y
+  cinturón, mangas hasta la muñeca y pantalón hasta el tobillo. Cara, cuello, manos y pies van en
+  tono piel. Cada extremidad es una forma continua que se estrecha, con contorno fino
   semitransparente. Las extremidades del lado lejano van detrás y en un tono apagado; el orden de
   capas se puede ajustar por extremidad (`src/skeleton/shapes.ts`).
 - Hacia dónde mira cada figura se deduce de la columna y del lado lejano: con eso se orientan los
