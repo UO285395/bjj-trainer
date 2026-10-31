@@ -7,13 +7,15 @@ ilustradas con siluetas y la posibilidad de crear movimientos propios dibujando 
 
 - **Entrenos**: registro de clases (fecha, tipo, duración, intensidad, rounds, notas y técnicas
   practicadas), agrupadas por mes.
-- **Catálogo**: 131 técnicas precargadas en 7 categorías (derribos, pases, barridas, luxaciones,
+- **Catálogo**: 145 técnicas precargadas en 7 categorías (derribos, pases, barridas, luxaciones,
   estrangulaciones, escapes y transiciones), con búsqueda sin tildes, filtros, favoritas y notas
   personales.
 - **Siluetas paso a paso**: dos figuras (azafrán = quien ejecuta, jade = compañero). Todas las
   técnicas del catálogo tienen su secuencia de posiciones intermedias, con la explicación de cada
   paso y los agarres marcados (`src/data/techniqueSteps.ts` y `src/data/steps/`, una lista por
-  categoría). Se puede animar la transición.
+  categoría). Cuando dos dibujos seguidos cambian mucho, se intercala uno a medio camino; y si una
+  mano o un pie no llega a su agarre, la figura se inclina y se desplaza lo justo para llegar
+  (`src/data/steps.ts`). Se puede animar la transición.
 - **Técnicas propias**: hasta 6 pasos por técnica; cada paso parte de una posición base, se ajusta
   arrastrando las articulaciones y se pueden marcar los agarres de manos y pies.
 - **Progreso**: cinturón y grados, entrenos por semana, técnicas más practicadas y repertorio por

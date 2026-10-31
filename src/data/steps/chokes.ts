@@ -714,4 +714,53 @@ export const CHOKE_STEPS: Record<string, StepSpec[]> = {
       arrows: [{ from: [90, 170], to: [140, 140], fighter: 0, bend: 0.4 }],
     },
   ],
+  'ezekiel-side': [
+    {
+      from: 'sideControl',
+      text: 'Pasa el brazo de la cabeza por detrás de su nuca y mete la mano dentro de tu otra manga.',
+      fighters: [{ reach: { handL: at('head', 1, 2, 6), handR: at('elbowL', 0) } }],
+      grips: [[0, 'handL', 'Dentro de tu manga']],
+    },
+    {
+      from: 'sideControl',
+      text: 'Cruza el filo del otro antebrazo sobre su garganta.',
+      fighters: [{ reach: { handL: at('head', 1, 2, 6), handR: at('neck', 1, 2, -6) } }],
+      grips: [
+        [0, 'handL', 'Dentro de tu manga'],
+        [0, 'handR', 'Garganta'],
+      ],
+    },
+    {
+      from: 'sideControl',
+      text: 'Junta los codos y baja el pecho: el antebrazo corta hacia el suelo.',
+      fighters: [{ move: [0, 6], reach: { handL: at('head', 1, 2, 6), handR: at('neck', 1, 2, -2) } }],
+      grips: [[0, 'handR', 'Garganta']],
+      arrows: [{ from: at('neck', 1, 0, -26), to: at('neck', 1, 0, -6), fighter: 0, bend: 0 }],
+    },
+  ],
+
+  'bread-cutter': [
+    {
+      from: 'sideControl',
+      text: 'Mete la mano de la cabeza en lo más profundo de su solapa cercana.',
+      fighters: [{ reach: { handL: at('neck', 1, -4, 6), handR: at('hipR', 1, -2, -8) } }],
+      grips: [[0, 'handL', 'Solapa']],
+    },
+    {
+      from: 'sideControl',
+      text: 'Pasa ese antebrazo por encima de su garganta y apoya la otra mano en tu muñeca.',
+      fighters: [{ reach: { handL: at('neck', 1, -4, 6), handR: at('neck', 1, 8, -6) } }],
+      grips: [
+        [0, 'handL', 'Solapa'],
+        [0, 'handR', 'Tu muñeca'],
+      ],
+    },
+    {
+      from: 'sideControl',
+      text: 'Empuja el antebrazo hacia el suelo, como cortando pan.',
+      fighters: [{ move: [0, 6], reach: { handL: at('neck', 1, -4, 4), handR: at('neck', 1, 8, -2) } }],
+      grips: [[0, 'handL', 'Solapa']],
+      arrows: [{ from: at('neck', 1, 4, -26), to: at('neck', 1, 4, -6), fighter: 0, bend: 0 }],
+    },
+  ],
 };

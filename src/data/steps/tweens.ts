@@ -393,6 +393,16 @@ export const TECHNIQUE_TWEENS: Record<string, Tweens> = {
       grips: [[0, 'handL', 'Brazo']],
     },
   },
+  'push-sweep': {
+    2: {
+      text: 'Pierde el equilibrio hacia atrás: sigue empujando sin soltar el talón.',
+      fighters: [
+        { angles: { spine: -80, neck: -70 }, reach: { handR: at('footR', 1, 4, -4) } },
+        { rotate: 45, move: [30, 20] },
+      ],
+      grips: [[0, 'handR', 'Talón']],
+    },
+  },
   'turtle-back-take': { 2: toBack('Rueda hacia un lado llevándolo contigo con el primer gancho.') },
   'mount-to-back': { 2: toBack('Rueda de lado sin soltar el cinturón de seguridad.') },
   'half-guard-back-take': {

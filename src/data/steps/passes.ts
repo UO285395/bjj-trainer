@@ -545,4 +545,91 @@ export const PASS_STEPS: Record<string, StepSpec[]> = {
     },
     { from: 'sideControl', text: 'Control lateral.' },
   ],
+  'butterfly-guard-pass': [
+    {
+      from: 'butterflyGuard*',
+      text: 'Agarra sus dos rodillas por fuera y aplástalas contra el suelo hacia un lado.',
+      fighters: [
+        {
+          angles: { spine: -115, neck: -125 },
+          reach: { handL: at('kneeL', 1, 0, -4), handR: at('kneeR', 1, 0, -4) },
+        },
+      ],
+      grips: [
+        [0, 'handL', 'Rodilla'],
+        [0, 'handR', 'Rodilla'],
+      ],
+    },
+    {
+      from: 'butterflyGuard*',
+      text: 'Salta hacia el otro lado de sus piernas sin soltar las rodillas.',
+      fighters: [
+        {
+          base: 'standing:1',
+          move: [-10, 10],
+          angles: { spine: -140, neck: -150 },
+          reach: { handL: at('kneeL', 1, 0, -4), handR: at('kneeR', 1, 0, -4) },
+        },
+        { rotate: 20, move: [0, 10] },
+      ],
+      grips: [[0, 'handR', 'Rodilla']],
+      arrows: [{ from: at('pelvis', 0, 0, 0), to: at('pelvis', 0, -60, 10), fighter: 0, bend: -0.4 }],
+    },
+    { from: 'sideControl', text: 'Baja el pecho a su costado: control lateral.' },
+  ],
+
+  'standing-guard-break': [
+    {
+      from: 'closedGuard*',
+      text: 'Con un puño en sus solapas y la otra mano en su cadera, endereza la espalda.',
+      fighters: [
+        {
+          angles: { spine: -92, neck: -95 },
+          reach: { handL: at('pelvis', 1, -20, -10), handR: at('pelvis', 1, 4, -10) },
+          fixed: true,
+        },
+        { move: [16, -16], rotate: -12 },
+      ],
+      grips: [
+        [0, 'handL', 'Solapas'],
+        [0, 'handR', 'Cadera'],
+      ],
+    },
+    {
+      from: 'closedGuard*',
+      text: 'Levanta una rodilla y luego la otra: ponte de pie con él colgado de tu cintura.',
+      fighters: [
+        {
+          base: 'standing:1',
+          move: [8, -4],
+          angles: { spine: -96, neck: -100 },
+          reach: { handL: at('neck', 1, 6, 10), handR: at('pelvis', 1, 4, -10) },
+        },
+        {
+          move: [20, -40],
+          rotate: 20,
+          reach: { footL: at('pelvis', 0, 14, -6), footR: at('pelvis', 0, 18, 0) },
+        },
+      ],
+      grips: [
+        [0, 'handL', 'Solapas'],
+        [1, 'footL', 'Guardia cerrada'],
+      ],
+    },
+    {
+      from: 'closedGuard*',
+      text: 'Da un paso atrás y empuja su rodilla hacia abajo: la guardia se abre.',
+      fighters: [
+        {
+          base: 'standing:1',
+          move: [14, -4],
+          angles: { spine: -105, neck: -110 },
+          reach: { handL: at('neck', 1, 6, 10), handR: at('kneeR', 1, 0, -4) },
+        },
+        { move: [10, -10], rotate: 10, angles: { thighR: -70, shinR: -20 } },
+      ],
+      grips: [[0, 'handR', 'Rodilla']],
+      arrows: [{ from: at('kneeR', 1, 0, -10), to: at('kneeR', 1, 10, 30), fighter: 0, bend: 0.2 }],
+    },
+  ],
 };

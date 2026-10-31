@@ -429,4 +429,77 @@ export const ESCAPE_STEPS: Record<string, StepSpec[]> = {
       arrows: [{ from: at('pelvis', 0, -10, 8), to: at('pelvis', 0, 20, 8), fighter: 0, bend: 0.2 }],
     },
   ],
+  'heel-drag-escape': [
+    {
+      from: 'mount*',
+      text: 'Pon las manos en sus caderas y gamba hacia un lado para dejar espacio bajo su rodilla.',
+      fighters: [
+        {
+          rotate: -10,
+          move: [-6, 0],
+          reach: { handL: at('hipL', 1, 0, 4), handR: at('hipR', 1, 0, 4) },
+        },
+      ],
+      grips: [
+        [0, 'handL', 'Cadera'],
+        [0, 'handR', 'Cadera'],
+      ],
+    },
+    {
+      from: 'mount*',
+      text: 'Engancha su talón con tu pie y arrástralo por encima de tu otra pierna.',
+      fighters: [
+        {
+          rotate: -16,
+          move: [-10, 0],
+          reach: { handL: at('hipL', 1, 0, 4), handR: at('hipR', 1, 0, 4), footR: at('footR', 1, 4, 0) },
+          bend: { footR: 1 },
+        },
+      ],
+      grips: [[0, 'footR', 'Talón']],
+      arrows: [{ from: at('footR', 1, 0, 0), to: at('footR', 1, -30, -10), fighter: 0, bend: 0.3 }],
+    },
+    { from: 'halfGuard', text: 'Cierra las piernas sobre la suya: estás en media guardia.' },
+  ],
+
+  'kimura-defense': [
+    {
+      from: 'closedGuard*',
+      text: 'Cuando agarre tu muñeca, agarra tu propio cinturón o pantalón con esa mano.',
+      fighters: [
+        { reach: { handR: at('pelvis', 0, 6, -4) }, fixed: true },
+        { rotate: 34, move: [6, 0], reach: { handR: at('handR', 0, 3, -3) } },
+      ],
+      grips: [
+        [0, 'handR', 'Tu cinturón'],
+        [1, 'handR', 'Muñeca'],
+      ],
+    },
+    {
+      from: 'closedGuard*',
+      text: 'Pega el codo a tu costado y endereza la espalda: el brazo queda pegado a ti.',
+      fighters: [
+        {
+          angles: { spine: -92, neck: -95 },
+          reach: { handR: at('pelvis', 0, 6, -4) },
+          fixed: true,
+        },
+        { rotate: 34, move: [6, 0], reach: { handR: at('handR', 0, 3, -3) } },
+      ],
+      grips: [
+        [0, 'handR', 'Tu cinturón'],
+        [1, 'handR', 'Muñeca'],
+      ],
+    },
+    {
+      from: 'closedGuard*',
+      text: 'Empuja su cabeza al suelo con la otra mano y saca el brazo hacia ti.',
+      fighters: [
+        { angles: { spine: -100, neck: -105 }, reach: { handL: at('head', 1, 0, -4) } },
+        { rotate: -6 },
+      ],
+      grips: [[0, 'handL', 'Cabeza']],
+      arrows: [{ from: at('elbowR', 0, 0, 0), to: at('elbowR', 0, 20, -10), fighter: 0, bend: 0.2 }],
+    },
+  ],
 };

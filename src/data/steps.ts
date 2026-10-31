@@ -6,6 +6,7 @@ import {
   currentBend,
   lerpPose,
   mirrorPose,
+  normalize,
   rotateBone,
   rotatePose,
   solve,
@@ -106,13 +107,19 @@ function miss(poses: Pose[], reaches: Reach[], i: number): number {
   return total;
 }
 
-const LEAN = [-40, -32, -24, -16, -10, -6, -3, 0, 3, 6, 10, 16, 24, 32, 40];
-const SHIFT = [-16, -10, -5, 0, 5, 10, 16];
+const LEAN = [-56, -48, -40, -32, -24, -16, -10, -6, -3, 0, 3, 6, 10, 16, 24, 32, 40, 48, 56];
+const SHIFT = [-24, -16, -10, -5, 0, 5, 10, 16, 24];
+const LIFT = [-10, -5, 0, 5, 10];
+
+/** Coste de mover la figura: más caro cuanto más se aleja de la pose escrita. */
+const effort = (lean: number, dx: number, dy: number) =>
+  Math.abs(lean) * 0.45 + Math.abs(dx) * 0.5 + Math.abs(dy) * 0.8;
 
 /**
  * Si una mano o un pie no llega a su agarre, la figura se inclina (gira la
- * columna) y se desplaza en horizontal lo justo para llegar, como haría una
- * persona. Se penaliza moverse mucho para no deformar la posición de partida.
+ * columna) y se desplaza lo justo para llegar, como haría una persona. Primero
+ * prueba una rejilla gruesa y luego afina alrededor de la mejor opción. Se
+ * penaliza moverse mucho para no deformar la posición de partida.
  */
 function settle(poses: Pose[], reaches: Reach[], mods: StepSpec['fighters']) {
   for (let pass = 0; pass < 2; pass++) {
@@ -120,14 +127,19 @@ function settle(poses: Pose[], reaches: Reach[], mods: StepSpec['fighters']) {
       if (!poses[i] || mods?.[i]?.fixed || !reaches.some((r) => r.i === i)) continue;
       if (miss(poses, reaches, i) < 3) continue;
       const start = poses[i]!;
-      let best = { cost: Infinity, pose: start };
-      for (const lean of LEAN) {
-        for (const shift of SHIFT) {
-          poses[i] = translate(rotateBone(start, 'spine', lean), shift, 0);
-          applyReaches(poses, reaches, i);
-          const cost = miss(poses, reaches, i) + Math.abs(lean) * 0.45 + Math.abs(shift) * 0.5;
-          if (cost < best.cost) best = { cost, pose: poses[i]! };
-        }
+      let best = { cost: Infinity, pose: start, lean: 0, dx: 0, dy: 0 };
+      const tryPose = (lean: number, dx: number, dy: number) => {
+        poses[i] = translate(rotateBone(start, 'spine', lean), dx, dy);
+        applyReaches(poses, reaches, i);
+        const cost = miss(poses, reaches, i) + effort(lean, dx, dy);
+        if (cost < best.cost) best = { cost, pose: poses[i]!, lean, dx, dy };
+      };
+      for (const lean of LEAN) for (const dx of SHIFT) for (const dy of LIFT) tryPose(lean, dx, dy);
+      for (const step of [3, 1]) {
+        const c = best;
+        for (const dl of [-step, 0, step])
+          for (const ddx of [-step, 0, step])
+            for (const ddy of [-step, 0, step]) tryPose(c.lean + dl, c.dx + ddx, c.dy + ddy);
       }
       poses[i] = best.pose;
     }
@@ -219,20 +231,81 @@ export type Tweens = Record<number, Inserted | Inserted[]>;
  */
 export function buildSteps(steps: StepSpec[], tweens: Tweens = {}): Frame[] {
   const frames = steps.map(buildStep);
+  return smooth(
+    frames.flatMap((frame, n) => {
+      const next = frames[n + 1];
+      const raw = tweens[n + 1];
+      if (!raw || !next) return [frame];
+      const list = (Array.isArray(raw) ? raw : [raw]).map((tw) =>
+        typeof tw === 'string' ? { text: tw } : tw,
+      );
+      const extra = list.map((tw, k) =>
+        'from' in tw
+          ? buildStep(tw)
+          : buildTween(steps[n]!, steps[n + 1]!, frame, next, {
+              ...tw,
+              t: tw.t ?? (k + 1) / (list.length + 1),
+            }),
+      );
+      return [frame, ...extra];
+    }),
+  );
+}
+
+/** Desplazamiento medio (px) de las articulaciones entre dos fotogramas. */
+function jump(a: Frame, b: Frame): number {
+  let total = 0;
+  let count = 0;
+  a.poses.forEach((p, i) => {
+    const q = b.poses[i];
+    if (!q) return;
+    const ja = solve(p);
+    const jb = solve(q);
+    for (const k of Object.keys(ja) as Joint[]) {
+      total += Math.hypot(ja[k].x - jb[k].x, ja[k].y - jb[k].y);
+      count++;
+    }
+  });
+  return count ? total / count : 0;
+}
+
+/**
+ * Un tronco que gira casi media vuelta no tiene un punto medio claro (podría
+ * pasar por arriba o por abajo): en ese caso no se inventa el dibujo de paso.
+ */
+function flips(a: Pose, b: Pose): boolean {
+  return Math.abs(normalize(b.angles.spine - a.angles.spine)) > 120;
+}
+
+/** Altura (y) del punto más alto de la figura. */
+const top = (pose: Pose) => Math.min(...Object.values(solve(pose)).map((p) => p.y));
+
+/**
+ * Una mezcla que deja a alguien más erguido que en los dos dibujos que une (p. ej.
+ * de la tortuga a sentado) no es un paso real: tampoco se dibuja.
+ */
+const RISE_LIMIT = 12;
+
+/** Por encima de este salto medio (px) entre dos dibujos se intercala uno de paso. */
+const JUMP_LIMIT = 40;
+
+/**
+ * Si entre dos dibujos seguidos los cuerpos cambian demasiado, intercala uno a
+ * medio camino que lleva ya el texto del siguiente: así cada cambio grande de
+ * posición tiene un dibujo de transición. Mantiene los agarres comunes a ambos.
+ */
+function smooth(frames: Frame[]): Frame[] {
   return frames.flatMap((frame, n) => {
     const next = frames[n + 1];
-    const raw = tweens[n + 1];
-    if (!raw || !next) return [frame];
-    const list = (Array.isArray(raw) ? raw : [raw]).map((tw) => (typeof tw === 'string' ? { text: tw } : tw));
-    const extra = list.map((tw, k) =>
-      'from' in tw
-        ? buildStep(tw)
-        : buildTween(steps[n]!, steps[n + 1]!, frame, next, {
-            ...tw,
-            t: tw.t ?? (k + 1) / (list.length + 1),
-          }),
+    if (!next || next.poses.length !== frame.poses.length || jump(frame, next) <= JUMP_LIMIT) return [frame];
+    if (frame.poses.some((p, i) => flips(p, next.poses[i]!))) return [frame];
+    const poses = frame.poses.map((p, i) => onGround(lerpPose(p, next.poses[i]!, 0.5))) as Frame['poses'];
+    if (poses.some((p, i) => top(p) < Math.min(top(frame.poses[i]!), top(next.poses[i]!)) - RISE_LIMIT))
+      return [frame];
+    const grips = (frame.grips ?? []).filter((g) =>
+      next.grips?.some((h) => h.fighter === g.fighter && h.joint === g.joint),
     );
-    return [frame, ...extra];
+    return [frame, { poses, grips, arrows: [], caption: next.caption }];
   });
 }
 

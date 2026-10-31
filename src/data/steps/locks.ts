@@ -907,4 +907,104 @@ export const LOCK_STEPS: Record<string, StepSpec[]> = {
       arrows: [{ from: at('footR', 1, 8, -6), to: at('footR', 1, -12, 10), fighter: 0, bend: 0.3 }],
     },
   ],
+  'kimura-half-guard': [
+    {
+      from: 'halfGuard',
+      text: 'Cuando apoye la mano en el suelo, agarra su muñeca con la mano del mismo lado.',
+      fighters: [{ reach: { handR: at('handL', 1, 3, -3) } }, { reach: { handL: [130, 198] } }],
+      grips: [[0, 'handR', 'Muñeca']],
+    },
+    {
+      from: 'halfGuard',
+      text: 'Siéntate de lado, pasa el otro brazo por encima de su hombro y agarra tu muñeca.',
+      fighters: [
+        {
+          rotate: 40,
+          move: [10, -4],
+          reach: { handR: at('handL', 1, 3, -3), handL: at('handL', 1, -2, -6) },
+        },
+        { reach: { handL: [130, 198] } },
+      ],
+      grips: [
+        [0, 'handR', 'Muñeca'],
+        [0, 'handL', 'Tu muñeca'],
+      ],
+    },
+    {
+      from: 'halfGuard',
+      text: 'Gira el tronco hacia atrás y lleva su mano hacia su espalda.',
+      fighters: [
+        {
+          rotate: 24,
+          move: [6, -2],
+          reach: { handR: at('handL', 1, 3), handL: at('handL', 1, -3, -4) },
+        },
+        { angles: { spine: -130, neck: -140 }, reach: { handL: [150, 150] } },
+      ],
+      grips: [
+        [0, 'handR', 'Muñeca'],
+        [0, 'handL', 'Tu muñeca'],
+      ],
+      arrows: [{ from: [150, 160], to: [180, 130], fighter: 0, bend: -0.3 }],
+    },
+  ],
+
+  'armbar-triangle': [
+    {
+      from: 'closedGuard',
+      text: 'Con el triángulo cerrado, agarra su brazo atrapado con las dos manos.',
+      fighters: [
+        {
+          move: [4, -4],
+          reach: {
+            handR: at('handR', 1, 3),
+            handL: at('elbowR', 1, 0, 2),
+            footL: at('neck', 1, 22, 4),
+            footR: at('neck', 1, 26, 8),
+          },
+          bend: { footL: -1, footR: -1 },
+          layers: { legL: 4, legR: 4 },
+        },
+        { rotate: -24, move: [-8, 8] },
+      ],
+      grips: [
+        [0, 'handR', 'Muñeca'],
+        [0, 'handL', 'Codo'],
+      ],
+    },
+    {
+      from: 'closedGuard',
+      text: 'Abre el triángulo, gira hacia el brazo y pasa la pierna por delante de su cara.',
+      fighters: [
+        {
+          rotate: 24,
+          move: [0, -6],
+          reach: { handR: at('handR', 1, 3), handL: at('handR', 1, -3), footL: at('head', 1, 14, -4) },
+          bend: { footL: -1 },
+          layers: { legL: 4 },
+        },
+        { rotate: -30, move: [-12, 10] },
+      ],
+      grips: [
+        [0, 'handR', 'Muñeca'],
+        [0, 'handL', 'Muñeca'],
+      ],
+    },
+    {
+      from: 'closedGuard',
+      text: 'Junta las rodillas, su pulgar hacia arriba, y eleva la cadera.',
+      fighters: [
+        {
+          rotate: 30,
+          move: [0, -10],
+          reach: { handR: at('handR', 1, 3), handL: at('handR', 1, -3), footL: at('head', 1, 16, 0) },
+          bend: { footL: -1 },
+          layers: { legL: 4 },
+        },
+        { rotate: -36, move: [-16, 12], reach: { handR: [120, 110] } },
+      ],
+      grips: [[0, 'handR', 'Muñeca']],
+      arrows: [{ from: at('pelvis', 0, 0, 0), to: at('pelvis', 0, 0, -20), fighter: 0, bend: 0.2 }],
+    },
+  ],
 };

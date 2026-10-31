@@ -537,4 +537,46 @@ export const SWEEP_STEPS: Record<string, StepSpec[]> = {
     },
     { from: 'backControl', text: 'Sal por detrás de él y mete los ganchos: tienes la espalda.' },
   ],
+  'push-sweep': [
+    {
+      from: 'butterflyGuard',
+      text: 'Agarra su manga y con la otra mano sujeta su talón por detrás.',
+      fighters: [{ reach: { handL: at('handL', 1, 3), handR: at('footR', 1, 6, -2) } }],
+      grips: [
+        [0, 'handL', 'Manga'],
+        [0, 'handR', 'Talón'],
+      ],
+    },
+    {
+      from: 'butterflyGuard',
+      text: 'Pon el pie en su rodilla y empuja estirando la pierna mientras bloqueas el talón.',
+      fighters: [
+        {
+          angles: { spine: -100, neck: -95 },
+          reach: { handL: at('handL', 1, 3), handR: at('footR', 1, 6, -2), footL: at('kneeR', 1, 2, -2) },
+        },
+        { rotate: 18, move: [10, 6] },
+      ],
+      grips: [
+        [0, 'handR', 'Talón'],
+        [0, 'footL', 'Rodilla'],
+      ],
+      arrows: [{ from: at('kneeR', 1, 0, -10), to: at('kneeR', 1, 40, 10), fighter: 0, bend: 0.2 }],
+    },
+    {
+      from: 'butterflyGuard',
+      text: 'Cae de espaldas: levántate en técnica sin soltar su pierna.',
+      fighters: [
+        {
+          base: 'standing:0',
+          move: [50, 6],
+          angles: { spine: -70, neck: -60 },
+          reach: { handR: at('footR', 1, 0, -4) },
+        },
+        { base: 'closedGuard:0', mirror: true, move: [80, 0] },
+      ],
+      grips: [[0, 'handR', 'Pierna']],
+    },
+    { from: 'sideControl', text: 'Pasa sus piernas y asienta el control lateral.' },
+  ],
 };

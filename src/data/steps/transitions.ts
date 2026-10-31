@@ -34,11 +34,7 @@ export const TRANSITION_STEPS: Record<string, StepSpec[]> = {
     {
       from: 'kneeOnBelly',
       text: 'Clava la rodilla en su abdomen con el pie de atrás apoyado y abierto.',
-      fighters: [{ reach: { handL: at('neck', 1, 10, -2), handR: at('hipR', 1, -2, -8) } }],
-      grips: [
-        [0, 'handL', 'Solapa'],
-        [0, 'handR', 'Pantalón'],
-      ],
+      fighters: [{ angles: { spine: -112, neck: -120 } }],
     },
   ],
 
@@ -506,5 +502,53 @@ export const TRANSITION_STEPS: Record<string, StepSpec[]> = {
         [0, 'handR', 'Codo'],
       ],
     },
+  ],
+  'knee-on-belly-to-mount': [
+    {
+      from: 'kneeOnBelly',
+      text: 'Cuando empuje tu rodilla, deja que resbale hacia su abdomen.',
+      fighters: [{ angles: { spine: -112, neck: -120 } }],
+    },
+    {
+      from: 'kneeOnBelly',
+      text: 'Pasa la rodilla al otro lado de su cuerpo y baja la cadera.',
+      fighters: [
+        {
+          move: [-6, 24],
+          angles: { spine: -95, neck: -100 },
+          reach: { handL: at('neck', 1, 10, -2), handR: [230, 196] },
+        },
+      ],
+      grips: [[0, 'handL', 'Solapa']],
+    },
+    { from: 'mount', text: 'Asienta las rodillas junto a sus axilas: montada.' },
+  ],
+
+  'back-to-mount': [
+    {
+      from: 'backControl',
+      text: 'Cuando escape hacia el lado del brazo de abajo, suelta el gancho de ese lado.',
+      fighters: [
+        { reach: { handL: at('neck', 1, 18, 4), handR: at('shoulderR', 1, 14, 14) } },
+        { rotate: -14, move: [-4, 4] },
+      ],
+      grips: [[0, 'handL', 'Cinturón de seguridad']],
+    },
+    {
+      from: 'backControl',
+      text: 'Gira con él y pasa la pierna por encima de su cadera.',
+      fighters: [
+        {
+          rotate: 40,
+          move: [10, 0],
+          angles: { thighR: -20, shinR: 60 },
+          reach: { handL: at('neck', 1, 18, 4) },
+        },
+        { rotate: 50, move: [0, 10] },
+      ],
+      grips: [[0, 'handL', 'Cuello']],
+      arrows: [{ from: at('footR', 0, 0, 0), to: at('footR', 0, 40, 30), fighter: 0, bend: -0.4 }],
+    },
+    { from: 'mount', text: 'Termina sentado sobre su abdomen: montada.' },
   ],
 };

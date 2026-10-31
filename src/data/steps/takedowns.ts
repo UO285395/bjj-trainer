@@ -117,7 +117,7 @@ export const TAKEDOWN_STEPS: Record<string, StepSpec[]> = {
           move: [40, 0],
           reach: { handL: at('neck', 1, -2, -4), handR: at('footR', 1, -2, -4) },
         },
-        { angles: { spine: -115, neck: -130 } },
+        { angles: { spine: -128, neck: -142 } },
       ],
       grips: [
         [0, 'handL', 'Nuca'],
@@ -558,4 +558,103 @@ export const TAKEDOWN_STEPS: Record<string, StepSpec[]> = {
     },
     { from: 'closedGuard', text: 'Tira de él hacia ti y cierra la guardia.' },
   ],
+  'duck-under': [
+    {
+      from: 'standing',
+      text: 'Agarra su nuca (collar tie) y controla su otro brazo por el codo.',
+      fighters: [
+        { move: [14, 0], reach: { handL: at('neck', 1, -2, -4), handR: at('elbowR', 1, 0, 2) } },
+        { reach: { handR: at('neck', 0, 2, -4) } },
+      ],
+      grips: [
+        [0, 'handL', 'Nuca'],
+        [0, 'handR', 'Codo'],
+        [1, 'handR', 'Nuca'],
+      ],
+    },
+    {
+      from: 'standing',
+      text: 'Empuja su codo hacia arriba, baja el nivel y mete la cabeza bajo su axila.',
+      fighters: [
+        {
+          move: [36, 16],
+          angles: { spine: -55, neck: -40, thighL: 60, shinL: 110, thighR: 110, shinR: 80 },
+          reach: { handL: at('pelvis', 1, 4, -8), handR: at('elbowR', 1, 0, 4) },
+        },
+        { angles: { upperArmR: -60, forearmR: -80 } },
+      ],
+      grips: [
+        [0, 'handR', 'Codo'],
+        [0, 'handL', 'Cintura'],
+      ],
+      arrows: [{ from: at('head', 0, 0, 0), to: at('head', 0, 40, -6), fighter: 0, bend: -0.3 }],
+    },
+    {
+      from: 'standing',
+      text: 'Sal por detrás de él y cierra las manos alrededor de su cintura.',
+      fighters: [
+        {
+          base: 'standing:1',
+          move: [26, 0],
+          angles: { spine: -100, neck: -105 },
+          reach: { handL: at('pelvis', 1, -6, -12), handR: at('pelvis', 1, -2, -16) },
+          layers: { torso: 0.5, armR: 3.1 },
+        },
+        {},
+      ],
+      grips: [[0, 'handR', 'Cintura']],
+    },
+    {
+      from: 'backControl',
+      text: 'Siéntalo tirando de la cadera hacia atrás y mete los ganchos: tienes su espalda.',
+    },
+  ],
+
+  'sasae-tsurikomi-ashi': throwSteps({
+    entry: {
+      text: 'Tira de la manga hacia arriba para que adelante el pie y apoya la planta en su tobillo.',
+      me: {
+        move: [10, 0],
+        angles: { spine: -100, neck: -100 },
+        reach: { ...lapelSleeve, footL: at('footL', 1, -4, -10) },
+      },
+      partner: { angles: { spine: -80, neck: -80 } },
+    },
+    throw: {
+      text: 'Bloquea el tobillo y gira los brazos como un volante: tropieza y cae delante de ti.',
+      me: {
+        move: [0, 0],
+        angles: { spine: -110, neck: -115 },
+        reach: { ...lapelSleeve, footL: at('footL', 1, -4, -10) },
+      },
+      partner: airborne(-70, -20, 30),
+      arrow: [at('head', 1, 0, -10), at('head', 1, -50, 60), 0.4],
+    },
+  }),
+
+  'uki-goshi': throwSteps({
+    grip: 'Rodea su espalda con un brazo por debajo de su axila y controla la manga.',
+    entry: {
+      text: 'Gira y pega el costado de tu cadera a su abdomen, sin meterla del todo.',
+      me: {
+        mirror: true,
+        move: [50, 8],
+        angles: { thighL: 100, shinL: 90, thighR: 85, shinR: 95 },
+        reach: { handL: at('shoulderR', 1, 4, 10) },
+      },
+      partner: { move: [-6, 0], angles: { spine: -98 } },
+      grips: [[0, 'handL', 'Espalda']],
+    },
+    throw: {
+      text: 'Gira el tronco sin levantarlo: rueda sobre tu cadera y cae delante.',
+      me: {
+        mirror: true,
+        move: [50, 4],
+        angles: { spine: -55, neck: -45 },
+        reach: { handL: at('shoulderR', 1, 4, 10) },
+      },
+      partner: airborne(-100, -14, 0),
+      arrow: [at('head', 1, 0, -10), at('head', 1, -40, 60), 0.5],
+    },
+  }),
 };
