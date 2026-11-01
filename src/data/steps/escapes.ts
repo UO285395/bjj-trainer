@@ -480,11 +480,12 @@ export const ESCAPE_STEPS: Record<string, StepSpec[]> = {
       text: 'Pega el codo a tu costado y endereza la espalda: el brazo queda pegado a ti.',
       fighters: [
         {
-          angles: { spine: -92, neck: -95 },
+          move: [8, -4],
+          angles: { spine: -84, neck: -88 },
           reach: { handR: at('pelvis', 0, 6, -4) },
           fixed: true,
         },
-        { rotate: 34, move: [6, 0], reach: { handR: at('handR', 0, 3, -3) } },
+        { rotate: 22, move: [2, 0], reach: { handR: at('handR', 0, 3, -3) } },
       ],
       grips: [
         [0, 'handR', 'Tu cinturón'],

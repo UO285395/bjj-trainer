@@ -536,18 +536,36 @@ export const TRANSITION_STEPS: Record<string, StepSpec[]> = {
     },
     {
       from: 'backControl',
-      text: 'Gira con él y pasa la pierna por encima de su cadera.',
+      text: 'Déjalo caer de espaldas hacia ese lado sin soltar el cuello.',
       fighters: [
         {
-          rotate: 40,
-          move: [10, 0],
-          angles: { thighR: -20, shinR: 60 },
-          reach: { handL: at('neck', 1, 18, 4) },
+          rotate: -40,
+          move: [-12, 12],
+          reach: { handL: at('neck', 1, 4, 4), handR: at('shoulderR', 1, 10, 6) },
         },
-        { rotate: 50, move: [0, 10] },
+        { rotate: -60, move: [-20, 14] },
       ],
       grips: [[0, 'handL', 'Cuello']],
-      arrows: [{ from: at('footR', 0, 0, 0), to: at('footR', 0, 40, 30), fighter: 0, bend: -0.4 }],
+    },
+    {
+      from: 'sideControl',
+      text: 'Cuando su espalda toque el suelo, gira hacia él y pon el pecho encima.',
+      fighters: [{ reach: { handL: at('neck', 1, 6, -2), handR: at('hipR', 1, -2, -10) } }],
+      grips: [[0, 'handR', 'Cadera']],
+    },
+    {
+      from: 'sideControl',
+      text: 'Pasa la rodilla por encima de su abdomen, pegada al cuerpo.',
+      fighters: [
+        {
+          move: [0, -6],
+          angles: { thighR: 205, shinR: 150 },
+          reach: { handR: at('hipR', 1, -2, -10) },
+          layers: { legR: 4 },
+        },
+      ],
+      grips: [[0, 'handR', 'Cadera']],
+      arrows: [{ from: [214, 150], to: [168, 152], fighter: 0, bend: -0.3 }],
     },
     { from: 'mount', text: 'Termina sentado sobre su abdomen: montada.' },
   ],

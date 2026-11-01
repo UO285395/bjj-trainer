@@ -605,6 +605,21 @@ export const TAKEDOWN_STEPS: Record<string, StepSpec[]> = {
       grips: [[0, 'handR', 'Cintura']],
     },
     {
+      from: 'standing',
+      text: 'Tira de su cadera hacia atrás y bajad los dos: siéntate llevándolo contigo.',
+      fighters: [
+        {
+          base: 'standing:1',
+          move: [30, 27],
+          angles: { spine: -98, neck: -100, thighL: 160, shinL: 95, thighR: 155, shinR: 92 },
+          reach: { handL: at('pelvis', 1, -6, -12), handR: at('pelvis', 1, -2, -16) },
+          layers: { torso: 0.5, armR: 3.1 },
+        },
+        { move: [0, 20], angles: { spine: -75, neck: -80, thighL: 150, shinL: 100, thighR: 140, shinR: 95 } },
+      ],
+      grips: [[0, 'handR', 'Cintura']],
+    },
+    {
       from: 'backControl',
       text: 'Siéntalo tirando de la cadera hacia atrás y mete los ganchos: tienes su espalda.',
     },

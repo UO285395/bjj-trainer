@@ -932,14 +932,17 @@ export const LOCK_STEPS: Record<string, StepSpec[]> = {
     },
     {
       from: 'halfGuard',
-      text: 'Gira el tronco hacia atrás y lleva su mano hacia su espalda.',
+      text: 'Vuelve al suelo en ángulo y lleva su mano hacia su espalda.',
       fighters: [
         {
-          rotate: 24,
-          move: [6, -2],
+          rotate: 12,
           reach: { handR: at('handL', 1, 3), handL: at('handL', 1, -3, -4) },
         },
-        { angles: { spine: -130, neck: -140 }, reach: { handL: [150, 150] } },
+        {
+          angles: { spine: -140, neck: -150 },
+          reach: { handL: at('pelvis', 1, -14, -12) },
+          bend: { handL: -1 },
+        },
       ],
       grips: [
         [0, 'handR', 'Muñeca'],
