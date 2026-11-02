@@ -117,7 +117,7 @@ export const TAKEDOWN_STEPS: Record<string, StepSpec[]> = {
           move: [40, 0],
           reach: { handL: at('neck', 1, -2, -4), handR: at('footR', 1, -2, -4) },
         },
-        { angles: { spine: -128, neck: -142 } },
+        { angles: { spine: -138, neck: -150 } },
       ],
       grips: [
         [0, 'handL', 'Nuca'],
@@ -222,7 +222,7 @@ export const TAKEDOWN_STEPS: Record<string, StepSpec[]> = {
     },
     throw: {
       text: 'Barre ese pie en la dirección en la que se movía y tira de la manga hacia abajo.',
-      me: { move: [20, 0], reach: { ...lapelSleeve, footR: [232, 196] } },
+      me: { move: [20, 0], reach: { ...lapelSleeve, footR: [222, 194] } },
       partner: airborne(-60, -6, 40),
       arrow: [at('footR', 0, -20, 0), at('footR', 0, 10, -6), 0.2],
     },
@@ -622,6 +622,11 @@ export const TAKEDOWN_STEPS: Record<string, StepSpec[]> = {
     {
       from: 'backControl',
       text: 'Siéntalo tirando de la cadera hacia atrás y mete los ganchos: tienes su espalda.',
+      // Visto desde el mismo lado que la entrada: los dos siguen mirando a la izquierda.
+      fighters: [
+        { mirror: true, move: [60, 0] },
+        { mirror: true, move: [0, 0] },
+      ],
     },
   ],
 
@@ -672,4 +677,46 @@ export const TAKEDOWN_STEPS: Record<string, StepSpec[]> = {
       arrow: [at('head', 1, 0, -10), at('head', 1, -40, 60), 0.5],
     },
   }),
+  'knee-tap': [
+    {
+      from: 'standing',
+      text: 'Agarra su nuca y su manga y muévete para que adelante una pierna.',
+      fighters: [{ move: [14, 0], reach: { handL: at('neck', 1, -2, -4), handR: at('elbowL', 1, 2, 4) } }],
+      grips: [
+        [0, 'handL', 'Nuca'],
+        [0, 'handR', 'Manga'],
+      ],
+    },
+    {
+      from: 'standing',
+      text: 'Da un paso al lado, baja una rodilla al suelo y bloquea su rodilla adelantada con la mano.',
+      fighters: [
+        {
+          base: 'doubleLeg:0',
+          move: [36, 0],
+          reach: { handL: at('neck', 1, -2, -4), handR: at('kneeR', 1, -4, 0) },
+        },
+        { angles: { spine: -125, neck: -138 } },
+      ],
+      grips: [
+        [0, 'handL', 'Nuca'],
+        [0, 'handR', 'Rodilla'],
+      ],
+    },
+    {
+      from: 'standing',
+      text: 'Tira de su cabeza hacia el lado de la rodilla bloqueada: cae de lado.',
+      fighters: [
+        {
+          base: 'doubleLeg:0',
+          move: [36, 0],
+          reach: { handL: at('neck', 1, -2, -4), handR: at('kneeR', 1, -4, 0) },
+        },
+        airborne(-55, -20, 34),
+      ],
+      grips: [[0, 'handR', 'Rodilla']],
+      arrows: [{ from: at('head', 1, 0, -10), to: at('head', 1, -40, 50), fighter: 0, bend: 0.4 }],
+    },
+    { from: 'sideControl', text: 'Sigue su caída y asienta el control lateral.' },
+  ],
 };

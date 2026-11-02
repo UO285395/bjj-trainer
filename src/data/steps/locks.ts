@@ -1010,4 +1010,38 @@ export const LOCK_STEPS: Record<string, StepSpec[]> = {
       arrows: [{ from: at('pelvis', 0, 0, 0), to: at('pelvis', 0, 0, -20), fighter: 0, bend: 0.2 }],
     },
   ],
+  'armbar-s-mount': [
+    {
+      from: 'mount',
+      text: 'Desde la montada en S, controla su brazo contra tu pecho.',
+      fighters: [
+        {
+          move: [-14, -2],
+          angles: { thighL: 200, shinL: 110, thighR: 120, shinR: 0 },
+          reach: { handL: at('handL', 1, 0, 2), handR: at('elbowL', 1) },
+        },
+        { reach: { handL: [150, 120] } },
+      ],
+      grips: [
+        [0, 'handL', 'Muñeca'],
+        [0, 'handR', 'Codo'],
+      ],
+    },
+    {
+      from: 'mount',
+      text: 'Pasa la pierna de la cabeza por encima de su cara, sin soltar el brazo.',
+      fighters: [
+        {
+          move: [-20, -4],
+          angles: { spine: -80, neck: -85, thighL: -110, shinL: 170, thighR: 120, shinR: 0 },
+          reach: { handL: at('handL', 1, 0, 2), handR: at('elbowL', 1) },
+          layers: { legL: 4 },
+        },
+        { reach: { handL: [146, 118] } },
+      ],
+      grips: [[0, 'handL', 'Muñeca']],
+      arrows: [{ from: at('footL', 0, 0, 0), to: at('head', 1, -14, 0), fighter: 0, bend: 0.4 }],
+    },
+    armbarFinish('Cae de espaldas con su brazo entre las piernas y eleva la cadera.'),
+  ],
 };

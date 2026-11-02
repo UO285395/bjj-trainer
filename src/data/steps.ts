@@ -270,21 +270,57 @@ function jump(a: Frame, b: Frame): number {
 }
 
 /**
- * Un tronco que gira casi media vuelta no tiene un punto medio claro (podría
- * pasar por arriba o por abajo): en ese caso no se inventa el dibujo de paso.
+ * Mezcla dos poses haciendo girar el tronco `spin` grados (puede ser más de media
+ * vuelta): se mezcla la forma del cuerpo con el tronco alineado y luego se gira.
  */
-function flips(a: Pose, b: Pose): boolean {
-  return Math.abs(normalize(b.angles.spine - a.angles.spine)) > 120;
+function spinLerp(a: Pose, b: Pose, t: number, spin: number): Pose {
+  const aligned = rotatePose(b, -normalize(b.angles.spine - a.angles.spine));
+  return rotatePose(lerpPose(a, aligned, t), spin * t);
+}
+
+/**
+ * Cuánto gira el tronco de `a` a `b`. Si gira casi media vuelta no está claro si
+ * pasa por arriba o por abajo: entonces sigue el sentido en que ya venía girando
+ * (de `before` a `a`), y si no venía girando no hay respuesta (null).
+ */
+function spinOf(before: Pose | undefined, a: Pose, b: Pose): number | null {
+  const d = normalize(b.angles.spine - a.angles.spine);
+  if (Math.abs(d) <= 120) return d;
+  const prev = before ? normalize(a.angles.spine - before.angles.spine) : 0;
+  if (Math.abs(prev) < 15) return null;
+  return Math.sign(prev) === Math.sign(d) ? d : d - Math.sign(d) * 360;
 }
 
 /** Altura (y) del punto más alto de la figura. */
 const top = (pose: Pose) => Math.min(...Object.values(solve(pose)).map((p) => p.y));
 
 /**
- * Una mezcla que deja a alguien más erguido que en los dos dibujos que une (p. ej.
- * de la tortuga a sentado) no es un paso real: tampoco se dibuja.
+ * Una mezcla puede dejar a alguien más alto que en los dos dibujos que une (al
+ * girar alrededor de la cadera, la cabeza sube). Se baja hasta su altura; si
+ * los pies quedan bajo el suelo, se apoyan en él doblando las rodillas; si aun
+ * así algo se hundiría (p. ej. de la tortuga a sentado pasaría por estar de pie),
+ * no es un paso real y no se dibuja (null).
  */
 const RISE_LIMIT = 12;
+/** Más de esto ya no es agacharse un poco: la mezcla no se parece a ningún paso real. */
+const MAX_LOWER = 24;
+
+function noHigher(pose: Pose, a: Pose, b: Pose): Pose | null {
+  const excess = Math.min(top(a), top(b)) - RISE_LIMIT - top(pose);
+  if (excess <= 0) return pose;
+  if (excess > MAX_LOWER) return null;
+  let lowered = translate(pose, 0, excess);
+  // Los pies que quedarían bajo el suelo se apoyan en él doblando las rodillas.
+  for (const end of ['footL', 'footR'] as const) {
+    const foot = solve(lowered)[end];
+    if (foot.y <= GROUND_LIMIT) continue;
+    const [upper, lower] = CHAINS[end];
+    const target = { x: foot.x, y: GROUND_LIMIT };
+    lowered = solveTwoBone(lowered, upper, lower, target, currentBend(lowered, upper, lower));
+  }
+  const low = Math.max(...Object.values(solve(lowered)).map((p) => p.y));
+  return low > GROUND_LIMIT + 2 ? null : lowered;
+}
 
 /** Por encima de este salto medio (px) entre dos dibujos se intercala uno de paso. */
 const JUMP_LIMIT = 40;
@@ -298,14 +334,16 @@ function smooth(frames: Frame[]): Frame[] {
   return frames.flatMap((frame, n) => {
     const next = frames[n + 1];
     if (!next || next.poses.length !== frame.poses.length || jump(frame, next) <= JUMP_LIMIT) return [frame];
-    if (frame.poses.some((p, i) => flips(p, next.poses[i]!))) return [frame];
-    const poses = frame.poses.map((p, i) => onGround(lerpPose(p, next.poses[i]!, 0.5))) as Frame['poses'];
-    if (poses.some((p, i) => top(p) < Math.min(top(frame.poses[i]!), top(next.poses[i]!)) - RISE_LIMIT))
-      return [frame];
+    const spins = frame.poses.map((p, i) => spinOf(frames[n - 1]?.poses[i], p, next.poses[i]!));
+    if (spins.some((d) => d === null)) return [frame];
+    const poses = frame.poses.map((p, i) =>
+      noHigher(onGround(spinLerp(p, next.poses[i]!, 0.5, spins[i]!)), p, next.poses[i]!),
+    );
+    if (poses.some((p) => p === null)) return [frame];
     const grips = (frame.grips ?? []).filter((g) =>
       next.grips?.some((h) => h.fighter === g.fighter && h.joint === g.joint),
     );
-    return [frame, { poses, grips, arrows: [], caption: next.caption }];
+    return [frame, { poses: poses as Frame['poses'], grips, arrows: [], caption: next.caption }];
   });
 }
 

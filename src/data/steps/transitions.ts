@@ -516,7 +516,7 @@ export const TRANSITION_STEPS: Record<string, StepSpec[]> = {
         {
           move: [-6, 24],
           angles: { spine: -95, neck: -100 },
-          reach: { handL: at('neck', 1, 10, -2), handR: [230, 196] },
+          reach: { handL: at('neck', 1, 10, -2), handR: [222, 194] },
         },
       ],
       grips: [[0, 'handL', 'Solapa']],

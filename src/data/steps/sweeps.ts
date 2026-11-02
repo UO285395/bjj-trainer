@@ -261,7 +261,7 @@ export const SWEEP_STEPS: Record<string, StepSpec[]> = {
       from: 'butterflyGuard',
       text: 'Sentado, atrapa su pierna adelantada con un brazo y apoya la otra mano detrás.',
       fighters: [
-        { reach: { handR: at('kneeR', 1, 0, 4), handL: [112, 198] }, bend: { handL: 1 } },
+        { reach: { handR: at('kneeR', 1, 0, 4), handL: [116, 196] }, bend: { handL: 1 } },
         { base: standingPartner },
       ],
       grips: [
@@ -276,7 +276,7 @@ export const SWEEP_STEPS: Record<string, StepSpec[]> = {
         {
           move: [10, -14],
           rotate: 10,
-          reach: { handR: at('kneeR', 1, 0, 4), handL: [112, 198], footL: [96, 198] },
+          reach: { handR: at('kneeR', 1, 0, 4), handL: [116, 196], footL: [96, 198] },
           bend: { footL: -1 },
         },
         { base: standingPartner },
@@ -578,5 +578,63 @@ export const SWEEP_STEPS: Record<string, StepSpec[]> = {
       grips: [[0, 'handR', 'Pierna']],
     },
     { from: 'sideControl', text: 'Pasa sus piernas y asienta el control lateral.' },
+  ],
+  'lumberjack-sweep': [
+    {
+      from: 'butterflyGuard',
+      text: 'Cuando se levante en tu guardia abierta, agarra sus dos tobillos por detrás.',
+      fighters: [
+        {
+          base: supineUnder,
+          move: [-20, 0],
+          reach: { handL: at('footL', 1, -4, -6), handR: at('footR', 1, -4, -6) },
+        },
+        { base: standingPartner, move: [-6, 0] },
+      ],
+      grips: [
+        [0, 'handL', 'Tobillo'],
+        [0, 'handR', 'Tobillo'],
+      ],
+    },
+    {
+      from: 'butterflyGuard',
+      text: 'Siéntate de golpe hacia él, con la cadera pegada a sus talones.',
+      fighters: [
+        {
+          base: seated,
+          move: [30, 4],
+          reach: { handL: at('footL', 1, 4, -6), handR: at('footR', 1, 4, -6) },
+        },
+        { base: standingPartner, move: [-6, 0] },
+      ],
+      grips: [
+        [0, 'handL', 'Tobillo'],
+        [0, 'handR', 'Tobillo'],
+      ],
+    },
+    {
+      from: 'butterflyGuard',
+      text: 'Empuja con el pecho contra sus rodillas sin soltar los tobillos: cae de espaldas.',
+      fighters: [
+        {
+          base: seated,
+          move: [40, 4],
+          angles: { spine: -55, neck: -45 },
+          reach: { handL: at('footL', 1, 4, -6), handR: at('footR', 1, 4, -6) },
+        },
+        { base: standingPartner, move: [30, 30], rotate: 50 },
+      ],
+      grips: [[0, 'handR', 'Tobillo']],
+      arrows: [{ from: at('neck', 1, 0, 0), to: [280, 170], fighter: 0, bend: 0.3 }],
+    },
+    {
+      from: 'mount',
+      text: 'Sube encima siguiendo su caída: montada.',
+      // Cae hacia la derecha: la montada se ve desde el otro lado.
+      fighters: [
+        { mirror: true, move: [40, 0] },
+        { mirror: true, move: [4, 0] },
+      ],
+    },
   ],
 };

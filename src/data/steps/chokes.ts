@@ -763,4 +763,37 @@ export const CHOKE_STEPS: Record<string, StepSpec[]> = {
       arrows: [{ from: at('neck', 1, 4, -26), to: at('neck', 1, 4, -6), fighter: 0, bend: 0 }],
     },
   ],
+  'arm-triangle-mount': [
+    {
+      from: 'mount',
+      text: 'Cuando empuje tu pecho, lleva su brazo contra su cara con la cabeza.',
+      fighters: [
+        { move: [-8, 8], angles: { spine: -150, neck: -160 }, reach: { handL: at('head', 1, 6, -4) } },
+        { reach: { handL: at('head', 1, 6, -10) } },
+      ],
+      grips: [[0, 'handL', 'Brazo']],
+    },
+    {
+      from: 'mount',
+      text: 'Rodea cuello y brazo con un brazo y junta las manos, palma con palma.',
+      fighters: [
+        {
+          move: [-8, 8],
+          angles: { spine: -150, neck: -160 },
+          reach: { handL: at('neck', 1, -4, 4), handR: at('head', 1, 6, -4) },
+        },
+        { reach: { handL: at('head', 1, 6, -10) } },
+      ],
+      grips: [[0, 'handL', 'Cuello']],
+    },
+    {
+      from: 'sideControl',
+      text: 'Baja de la montada al lado contrario del brazo atrapado y aprieta con el hombro.',
+      fighters: [
+        { reach: { handL: at('neck', 1, -4, 4), handR: at('head', 1, 6, -4) } },
+        { reach: { handL: at('head', 1, 6, -10) } },
+      ],
+      grips: [[0, 'handL', 'Cuello']],
+    },
+  ],
 };

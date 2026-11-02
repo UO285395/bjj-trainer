@@ -107,7 +107,7 @@ const BASIC_STEPS: Record<string, StepSpec[]> = {
           rotate: 66,
           move: [22, -8],
           reach: {
-            handL: [140, 197],
+            handL: [150, 196],
             handR: { joint: 'shoulderR', of: 1, dx: 4, dy: 6 },
             footL: [196, 198],
             footR: [204, 199],

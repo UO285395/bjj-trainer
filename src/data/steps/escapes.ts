@@ -503,4 +503,35 @@ export const ESCAPE_STEPS: Record<string, StepSpec[]> = {
       arrows: [{ from: at('elbowR', 0, 0, 0), to: at('elbowR', 0, 20, -10), fighter: 0, bend: 0.2 }],
     },
   ],
+  'scarf-hold-escape': [
+    {
+      from: 'sideControl*',
+      text: 'Gira hacia él, saca el codo atrapado y agarra su cinturón por detrás.',
+      fighters: [{ reach: { handR: at('pelvis', 1, 6, -6) } }],
+      grips: [[0, 'handR', 'Cinturón']],
+    },
+    {
+      from: 'sideControl*',
+      text: 'Puentea alto llevándolo encima de ti con el brazo del cinturón.',
+      fighters: [
+        {
+          move: [0, -10],
+          angles: { thighL: -60, shinL: 80, thighR: -50, shinR: 70 },
+          reach: { handR: at('pelvis', 1, 6, -6) },
+        },
+        { move: [0, -10], rotate: 12 },
+      ],
+      grips: [[0, 'handR', 'Cinturón']],
+      arrows: [{ from: at('pelvis', 0, 0, 10), to: at('pelvis', 0, -20, -30), fighter: 0, bend: 0.3 }],
+    },
+    {
+      from: 'sideControl',
+      text: 'Rueda hacia el otro lado siguiendo el puente: quedas encima en control lateral.',
+      // Cae por encima de ti hacia la izquierda: el control lateral queda a ese lado.
+      fighters: [
+        { mirror: true, move: [-60, 0] },
+        { mirror: true, move: [-60, 0] },
+      ],
+    },
+  ],
 };
