@@ -1,0 +1,105 @@
+import { memo } from 'react';
+import Svg, { Circle, G, Line, Path, Text as SvgText } from 'react-native-svg';
+
+import { solve } from '../skeleton/model';
+import { FIGHTER_COLORS, type Frame, VIEW, arrowPaths, frameParts } from '../skeleton/shapes';
+import { colors } from '../theme';
+
+export const GROUND_Y = 200;
+
+const THUMB_RATIO = 0.62;
+
+/** Encuadre ajustado a las figuras, con la proporción de las miniaturas. */
+function fitBox(frame: Frame) {
+  const points = frame.poses.flatMap((p) => Object.values(solve(p)));
+  const pad = 16;
+  let minX = Math.min(...points.map((p) => p.x)) - pad;
+  let maxX = Math.max(...points.map((p) => p.x)) + pad;
+  let minY = Math.min(...points.map((p) => p.y)) - pad;
+  let maxY = Math.max(...points.map((p) => p.y)) + pad;
+  const w = maxX - minX;
+  const h = maxY - minY;
+  if (h / w > THUMB_RATIO) {
+    const extra = h / THUMB_RATIO - w;
+    minX -= extra / 2;
+    maxX += extra / 2;
+  } else {
+    const extra = w * THUMB_RATIO - h;
+    minY -= extra / 2;
+    maxY += extra / 2;
+  }
+  return `${minX} ${minY} ${maxX - minX} ${maxY - minY}`;
+}
+
+type Props = {
+  frame: Frame;
+  width: number;
+  /** Encuadra las figuras para usarlo como miniatura. */
+  compact?: boolean;
+  children?: React.ReactNode;
+};
+
+function FrameViewBase({ frame, width, compact, children }: Props) {
+  const viewBox = compact ? fitBox(frame) : `0 0 ${VIEW.width} ${VIEW.height}`;
+  const ratio = compact ? THUMB_RATIO : VIEW.height / VIEW.width;
+  return (
+    <Svg width={width} height={width * ratio} viewBox={viewBox}>
+      <Line x1={0} y1={GROUND_Y} x2={VIEW.width} y2={GROUND_Y} stroke={colors.matLine} strokeWidth={2} />
+      {frameParts(frame).map((p) => (
+        <Path
+          key={p.key}
+          d={p.d}
+          fill={p.fill}
+          stroke={p.stroke}
+          strokeWidth={p.width ?? 1}
+          strokeLinejoin="round"
+          strokeLinecap="round"
+        />
+      ))}
+      {frame.arrows?.map((a, i) => {
+        const { line, head } = arrowPaths(a);
+        const color = colors.text;
+        return (
+          <G key={i}>
+            <Path d={line} fill="none" stroke={color} strokeWidth={2.2} strokeDasharray="6 5" />
+            <Path d={head} fill="none" stroke={color} strokeWidth={2.2} strokeLinecap="round" />
+          </G>
+        );
+      })}
+      {frame.grips?.map((g, i) => {
+        const pose = frame.poses[g.fighter];
+        if (!pose) return null;
+        const j = solve(pose)[g.joint];
+        // Punto de contacto numerado, del color de quien agarra; el número coincide con la lista de agarres.
+        return (
+          <G key={`g${i}`}>
+            <Circle cx={j.x} cy={j.y} r={9} fill={colors.text} opacity={0.18} />
+            <Circle
+              cx={j.x}
+              cy={j.y}
+              r={6}
+              fill={FIGHTER_COLORS[g.fighter].main}
+              stroke={colors.text}
+              strokeWidth={1.8}
+            />
+            {!compact && (
+              <SvgText
+                x={j.x}
+                y={j.y + 3}
+                fontSize={8}
+                fontWeight="700"
+                fill={colors.onPrimary}
+                textAnchor="middle"
+              >
+                {i + 1}
+              </SvgText>
+            )}
+          </G>
+        );
+      })}
+      {children}
+    </Svg>
+  );
+}
+
+export const FrameView = memo(FrameViewBase);
