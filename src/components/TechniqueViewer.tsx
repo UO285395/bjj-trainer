@@ -1,12 +1,24 @@
 import { useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { FIGHTER_COLORS, type Frame, lerpFrame } from '../skeleton/shapes';
+import { FIGHTER_COLORS, type Frame, frameDistance, lerpFrame } from '../skeleton/shapes';
 import { colors, fonts } from '../theme';
 import { FrameView } from './FrameView';
 
-const STEP_MS = 1100;
-const HOLD_MS = 600;
+/** Pausa en cada paso para leerlo, y más larga al acabar antes de volver al inicio. */
+const HOLD_MS = 450;
+const END_HOLD_MS = 1600;
+/** El paso dura más cuanto más se mueven los cuerpos, dentro de estos límites. */
+const MIN_STEP_MS = 650;
+const MAX_STEP_MS = 1500;
+const BASE_MS = 450;
+const MS_PER_PX = 22;
+
+const stepMs = (a: Frame, b: Frame) =>
+  Math.max(MIN_STEP_MS, Math.min(MAX_STEP_MS, BASE_MS + frameDistance(a, b) * MS_PER_PX));
+
+/** Arranca y frena suave (seno), sin el tirón a mitad de una curva cuadrática. */
+const ease = (t: number) => (1 - Math.cos(Math.PI * t)) / 2;
 
 /** Muestra los fotogramas de una técnica, con paso a paso y animación. */
 export function TechniqueViewer({ frames, width }: { frames: Frame[]; width: number }) {
@@ -17,18 +29,25 @@ export function TechniqueViewer({ frames, width }: { frames: Frame[]; width: num
 
   useEffect(() => {
     if (!playing || frames.length < 2) return;
+    const last = frames.length - 1;
+    const durations = frames.slice(0, -1).map((f, i) => stepMs(f, frames[i + 1]!));
     let start: number | null = null;
     let from = index;
     const tick = (now: number) => {
       start ??= now;
       const elapsed = now - start;
-      if (elapsed < HOLD_MS) {
+      const hold = from === last ? END_HOLD_MS : HOLD_MS;
+      if (elapsed < hold) {
         setTween(null);
+      } else if (from === last) {
+        // Al acabar se vuelve al primer paso de golpe, sin rebobinar la técnica.
+        from = 0;
+        setIndex(0);
+        start = now;
       } else {
-        const t = Math.min(1, (elapsed - HOLD_MS) / STEP_MS);
-        const to = (from + 1) % frames.length;
-        const eased = t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2;
-        setTween(lerpFrame(frames[from], frames[to], eased));
+        const t = Math.min(1, (elapsed - hold) / durations[from]!);
+        const to = from + 1;
+        setTween(lerpFrame(frames[from]!, frames[to]!, ease(t), frames[from - 1], frames[to + 1]));
         if (t >= 1) {
           from = to;
           setIndex(to);
