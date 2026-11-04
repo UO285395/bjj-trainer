@@ -1,4 +1,5 @@
-import { type Joint, type Point, type Pose, lerpPose } from './model';
+import { type Joint, type Point, type Pose, solve } from './model';
+import { blendPose, orbitPair } from './motion';
 
 import { type Part, FIGHTER_COLORS, poseParts, sortParts } from './avatar';
 
@@ -48,11 +49,42 @@ export function swapFighters(frame: Frame): Frame {
   };
 }
 
-export function lerpFrame(a: Frame, b: Frame, t: number): Frame {
+/**
+ * Fotograma entre `a` (t = 0) y `b` (t = 1). `prev` y `next` son los pasos de
+ * antes y después, para que la trayectoria pase suave por cada paso.
+ */
+export function lerpFrame(a: Frame, b: Frame, t: number, prev?: Frame, next?: Frame): Frame {
   if (a.poses.length !== b.poses.length) return t < 0.5 ? a : b;
-  const poses = a.poses.map((p, i) => lerpPose(p, b.poses[i]!, t)) as Frame['poses'];
+  const same = (f: Frame | undefined) => (f && f.poses.length === a.poses.length ? f : undefined);
+  const blended = a.poses.map((p, i) =>
+    blendPose(same(prev)?.poses[i], p, b.poses[i]!, same(next)?.poses[i], t),
+  );
+  const poses = orbitPair(blended, a.poses, b.poses, t) as Frame['poses'];
   const near = t < 0.5 ? a : b;
   return { poses, arrows: near.arrows, grips: near.grips, caption: near.caption };
+}
+
+/** Fotograma en la posición `u` de la secuencia (1.5 = a medio camino entre el paso 2 y el 3). */
+export function sampleFrames(frames: Frame[], u: number): Frame {
+  const i = Math.max(0, Math.min(frames.length - 2, Math.floor(u)));
+  return lerpFrame(frames[i]!, frames[i + 1]!, u - i, frames[i - 1], frames[i + 2]);
+}
+
+/** Desplazamiento medio (px) de las articulaciones entre dos fotogramas. */
+export function frameDistance(a: Frame, b: Frame): number {
+  let total = 0;
+  let count = 0;
+  a.poses.forEach((p, i) => {
+    const q = b.poses[i];
+    if (!q) return;
+    const ja = solve(p);
+    const jb = solve(q);
+    for (const k of Object.keys(ja) as Joint[]) {
+      total += Math.hypot(ja[k].x - jb[k].x, ja[k].y - jb[k].y);
+      count++;
+    }
+  });
+  return count ? total / count : 0;
 }
 
 export const VIEW = { width: 320, height: 220 };
