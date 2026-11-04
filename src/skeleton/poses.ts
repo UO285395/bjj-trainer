@@ -32,7 +32,7 @@ const CENTER = 160;
 const flip = (p: Pose) => mirrorPose(p, CENTER);
 
 // De pie, mirando a la derecha, en guardia.
-const standingRight = pose(122, 118, 'L', {
+const standingRight = pose(118, 118, 'L', {
   spine: -78,
   neck: -70,
   upperArmR: 55,
@@ -111,9 +111,9 @@ export const POSITIONS = {
   butterflyGuard: {
     caption: 'Guardia mariposa',
     poses: [
-      pose(140, 186, 'L', {
-        spine: -72,
-        neck: -60,
+      pose(138, 186, 'L', {
+        spine: -84,
+        neck: -92,
         upperArmL: 20,
         forearmL: 0,
         upperArmR: 30,
@@ -124,12 +124,12 @@ export const POSITIONS = {
         shinR: 45,
       }),
       kneelingLeft(202, 155, {
-        spine: -112,
-        neck: -125,
-        upperArmL: 150,
-        forearmL: 175,
-        upperArmR: 140,
-        forearmR: 170,
+        spine: -104,
+        neck: -112,
+        upperArmL: 145,
+        forearmL: 165,
+        upperArmR: 135,
+        forearmR: 160,
       }),
     ],
   },
@@ -180,7 +180,7 @@ export const POSITIONS = {
     caption: 'Control lateral',
     poses: [
       kneelingLeft(
-        190,
+        204,
         155,
         {
           spine: -168,
@@ -237,7 +237,7 @@ export const POSITIONS = {
     poses: [
       pose(
         92,
-        168,
+        163,
         'L',
         {
           spine: -8,

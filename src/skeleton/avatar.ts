@@ -301,7 +301,9 @@ export function poseParts(pose: Pose, palette: Palette, fighter: number): Part[]
   // Cabeza: grande, con ojo y ceja mirando hacia delante y pelo en punta detrás.
   const c = add(j.head, headUp, HEAD_R - 9);
   const H = (a: number, b: number) => add(add(c, headFront, a * HEAD_R), headUp, b * HEAD_R);
-  const hz = tz + 0.02;
+  // La cabeza va por encima de ambos troncos (nunca queda escondida tras el
+  // compañero) y por debajo de los miembros cercanos, que sí pueden taparla.
+  const hz = tz + 0.5;
   const skull: V[] = [];
   for (let k = 0; k < 36; k++) {
     const th = (k / 36) * Math.PI * 2;
