@@ -14,6 +14,7 @@ import {
   translate,
 } from '../skeleton/model';
 import { POSITIONS, type PositionId } from '../skeleton/poses';
+import { HEAD_R, headCenter } from '../skeleton/avatar';
 import { type Arrow, type Frame, type Grip, swapFighters } from '../skeleton/shapes';
 
 // Herramientas para describir los pasos de una técnica como variaciones de una
@@ -150,6 +151,45 @@ function settle(poses: Pose[], reaches: Reach[], mods: StepSpec['fighters']) {
 /** Contenido de un paso sin su posición de partida (la de un paso intermedio sale de sus vecinos). */
 type StepBody = Omit<StepSpec, 'from'>;
 
+const HEAD_GAP = HEAD_R * 2.3;
+const MAX_TILT = 40;
+
+/**
+ * Con las cabezas grandes del avatar, dos cabezas muy juntas se pisan y no se
+ * ve ninguna cara. Inclina el cuello de cada luchador (hasta MAX_TILT grados)
+ * hacia el lado que las aleja. Devuelve si ha cambiado algo.
+ */
+function separateHeads(poses: Pose[]): boolean {
+  if (poses.length < 2) return false;
+  const original = poses.map((p) => p.angles.neck);
+  const gap = () => {
+    const [a, b] = poses.map((p) => headCenter(solve(p)));
+    return Math.hypot(a!.x - b!.x, a!.y - b!.y);
+  };
+  let changed = false;
+  for (let k = 0; k < 8 && gap() < HEAD_GAP; k++) {
+    for (const i of [0, 1]) {
+      const best = [-5, 5]
+        .map((d) => {
+          const neck = normalize(poses[i]!.angles.neck + d);
+          if (Math.abs(normalize(neck - original[i]!)) > MAX_TILT) return null;
+          const saved = poses[i]!;
+          poses[i] = { ...saved, angles: { ...saved.angles, neck } };
+          const g = gap();
+          poses[i] = saved;
+          return { neck, g };
+        })
+        .filter((x) => x !== null)
+        .sort((a, b) => b.g - a.g)[0];
+      if (best && best.g > gap()) {
+        poses[i] = { ...poses[i]!, angles: { ...poses[i]!.angles, neck: best.neck } };
+        changed = true;
+      }
+    }
+  }
+  return changed;
+}
+
 /** Termina un paso: manos y pies a sus agarres, ajuste de cuerpo, agarres y flechas. */
 function finish(poses: Frame['poses'], spec: StepBody): Frame {
   // Los alcances se resuelven después, para poder apuntar a la pose ya movida del
@@ -168,6 +208,9 @@ function finish(poses: Frame['poses'], spec: StepBody): Frame {
   reaches.sort((a, b) => Number(!Array.isArray(a.target)) - Number(!Array.isArray(b.target)));
   applyReaches(poses, reaches);
   settle(poses, reaches, spec.fighters);
+  // Separar las cabezas mueve el cuello: los agarres que van a la cabeza o al
+  // cuello del otro se vuelven a colocar.
+  if (separateHeads(poses)) applyReaches(poses, reaches);
   const grips: Grip[] = (spec.grips ?? []).map(([fighter, joint, label]) => ({ fighter, joint, label }));
   const arrows: Arrow[] = (spec.arrows ?? []).map((a) => ({
     from: resolve(a.from, poses),
@@ -340,6 +383,7 @@ function smooth(frames: Frame[]): Frame[] {
       noHigher(onGround(spinLerp(p, next.poses[i]!, 0.5, spins[i]!)), p, next.poses[i]!),
     );
     if (poses.some((p) => p === null)) return [frame];
+    separateHeads(poses as Pose[]);
     const grips = (frame.grips ?? []).filter((g) =>
       next.grips?.some((h) => h.fighter === g.fighter && h.joint === g.joint),
     );

@@ -32,7 +32,7 @@ export const FIGHTER_COLORS: Palette[] = [
   { main: '#3FB59A', skin: '#C68A62', hair: '#17130F', belt: '#1A1814' },
 ];
 
-const HEAD_R = 17;
+export const HEAD_R = 17;
 const HAND_R = 6.8;
 const FOOT_SCALE = 1.2;
 const THICK = 1.3;
@@ -174,6 +174,11 @@ function band(
 
 // ---------- figura ----------
 
+/** Centro del círculo de la cabeza tal como se dibuja (algo más arriba que la articulación). */
+export function headCenter(j: Record<'neck' | 'head', Point>): Point {
+  return add(j.head, unit(sub(j.head, j.neck)), HEAD_R - 9);
+}
+
 const DEFAULT_LAYER = { far: 0, torso: 1, near: 2 };
 
 export function poseParts(pose: Pose, palette: Palette, fighter: number): Part[] {
@@ -299,7 +304,7 @@ export function poseParts(pose: Pose, palette: Palette, fighter: number): Part[]
   put('knot', circle(knot, 3), palette.belt, tz + 0.008, { width: 0.5 });
 
   // Cabeza: grande, con ojo y ceja mirando hacia delante y pelo en punta detrás.
-  const c = add(j.head, headUp, HEAD_R - 9);
+  const c = headCenter(j);
   const H = (a: number, b: number) => add(add(c, headFront, a * HEAD_R), headUp, b * HEAD_R);
   // La cabeza va por encima de ambos troncos (nunca queda escondida tras el
   // compañero) y por debajo de los miembros cercanos, que sí pueden taparla.
