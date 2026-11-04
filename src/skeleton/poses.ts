@@ -1,4 +1,4 @@
-import { type Bone, type Pose, type Side, mirrorPose } from './model';
+import { type Bone, type Pose, type Side, mirrorPose, naturalKnees } from './model';
 import type { Frame } from './shapes';
 
 // Posiciones base del catálogo. Los ángulos son absolutos: 0 = derecha,
@@ -87,7 +87,7 @@ const kneelingLeft = (x: number, y: number, a: Angles = {}, layers?: Pose['layer
     layers,
   );
 
-export const POSITIONS = {
+const RAW_POSITIONS = {
   standing: {
     poses: [standingRight, flip(standingRight)],
     caption: 'De pie',
@@ -180,11 +180,11 @@ export const POSITIONS = {
     caption: 'Control lateral',
     poses: [
       kneelingLeft(
-        204,
+        216,
         155,
         {
           spine: -168,
-          neck: -175,
+          neck: 165,
           upperArmL: 110,
           forearmL: 170,
           upperArmR: 95,
@@ -353,5 +353,13 @@ export const POSITIONS = {
     ],
   },
 } satisfies Record<string, Frame>;
+
+/** Posiciones base, con las rodillas siempre dobladas hacia atrás. */
+export const POSITIONS = Object.fromEntries(
+  Object.entries(RAW_POSITIONS).map(([id, frame]) => [
+    id,
+    { ...frame, poses: frame.poses.map(naturalKnees) as Frame['poses'] },
+  ]),
+) as typeof RAW_POSITIONS;
 
 export type PositionId = keyof typeof POSITIONS;

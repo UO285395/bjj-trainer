@@ -175,3 +175,27 @@ export function lerpPose(a: Pose, b: Pose, t: number): Pose {
   }
   return { ...a, x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t, angles };
 }
+
+/**
+ * Rodillas que se doblan hacia delante (al revés): se reflejan respecto a la
+ * línea cadera-pie, con el pie en el mismo sitio, para que flexionen hacia atrás.
+ * Un margen pequeño deja pasar las piernas casi rectas. Los codos no se tocan:
+ * de perfil, un brazo con el codo hacia fuera parece doblado al revés y es válido.
+ */
+export function naturalKnees(pose: Pose): Pose {
+  const s = pose.far === 'L' ? 1 : -1;
+  const margin = Math.sin(rad(8));
+  const chains: [Bone, Bone][] = [
+    ['thighL', 'shinL'],
+    ['thighR', 'shinR'],
+  ];
+  let out = pose;
+  for (const [upper, lower] of chains) {
+    const bend = Math.sin(rad(normalize(out.angles[lower] - out.angles[upper])));
+    if (s * bend < -margin) {
+      const end = solve(out)[BONES[lower].to];
+      out = solveTwoBone(out, upper, lower, end, currentBend(out, upper, lower) === 1 ? -1 : 1);
+    }
+  }
+  return out;
+}

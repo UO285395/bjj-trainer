@@ -6,6 +6,7 @@ import {
   currentBend,
   lerpPose,
   mirrorPose,
+  naturalKnees,
   normalize,
   rotateBone,
   rotatePose,
@@ -211,6 +212,8 @@ function finish(poses: Frame['poses'], spec: StepBody): Frame {
   // Separar las cabezas mueve el cuello: los agarres que van a la cabeza o al
   // cuello del otro se vuelven a colocar.
   if (separateHeads(poses)) applyReaches(poses, reaches);
+  // Rodillas hacia atrás, con los pies donde estaban (los agarres de pie siguen).
+  poses.forEach((p, i) => (poses[i] = naturalKnees(p)));
   const grips: Grip[] = (spec.grips ?? []).map(([fighter, joint, label]) => ({ fighter, joint, label }));
   const arrows: Arrow[] = (spec.arrows ?? []).map((a) => ({
     from: resolve(a.from, poses),
@@ -384,6 +387,7 @@ function smooth(frames: Frame[]): Frame[] {
     );
     if (poses.some((p) => p === null)) return [frame];
     separateHeads(poses as Pose[]);
+    poses.forEach((p, i) => (poses[i] = naturalKnees(p!)));
     const grips = (frame.grips ?? []).filter((g) =>
       next.grips?.some((h) => h.fighter === g.fighter && h.joint === g.joint),
     );
