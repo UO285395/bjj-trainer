@@ -1,5 +1,5 @@
-import { memo } from 'react';
-import Svg, { Circle, G, Line, Path, Text as SvgText } from 'react-native-svg';
+import { memo, useId } from 'react';
+import Svg, { Circle, ClipPath, Defs, Ellipse, G, Line, Path, Text as SvgText } from 'react-native-svg';
 
 import { solve } from '../skeleton/model';
 import { FIGHTER_COLORS, type Frame, VIEW, arrowPaths, frameParts } from '../skeleton/shapes';
@@ -12,7 +12,8 @@ const THUMB_RATIO = 0.62;
 /** Encuadre ajustado a las figuras, con la proporción de las miniaturas. */
 function fitBox(frame: Frame) {
   const points = frame.poses.flatMap((p) => Object.values(solve(p)));
-  const pad = 16;
+  // Margen amplio: la cabeza y los pies sobresalen de las articulaciones.
+  const pad = 26;
   let minX = Math.min(...points.map((p) => p.x)) - pad;
   let maxX = Math.max(...points.map((p) => p.x)) + pad;
   let minY = Math.min(...points.map((p) => p.y)) - pad;
@@ -42,10 +43,26 @@ type Props = {
 function FrameViewBase({ frame, width, compact, children }: Props) {
   const viewBox = compact ? fitBox(frame) : `0 0 ${VIEW.width} ${VIEW.height}`;
   const ratio = compact ? THUMB_RATIO : VIEW.height / VIEW.width;
+  // Los recortes necesitan ids únicos: en una lista hay muchas miniaturas a la vez.
+  const uid = useId().replace(/[^a-zA-Z0-9_-]/g, '');
+  const parts = frameParts(frame);
+  const clipped = parts.filter((p) => p.clip);
   return (
     <Svg width={width} height={width * ratio} viewBox={viewBox}>
       <Line x1={0} y1={GROUND_Y} x2={VIEW.width} y2={GROUND_Y} stroke={colors.matLine} strokeWidth={2} />
-      {frameParts(frame).map((p) => (
+      {frame.poses.map((p, i) => (
+        <Ellipse key={`shadow${i}`} cx={p.x} cy={GROUND_Y + 1} rx={34} ry={4} fill="#000000" opacity={0.35} />
+      ))}
+      {clipped.length > 0 && (
+        <Defs>
+          {clipped.map((p) => (
+            <ClipPath key={p.key} id={`${uid}-${p.key}`}>
+              <Path d={p.clip!} />
+            </ClipPath>
+          ))}
+        </Defs>
+      )}
+      {parts.map((p) => (
         <Path
           key={p.key}
           d={p.d}
@@ -54,6 +71,8 @@ function FrameViewBase({ frame, width, compact, children }: Props) {
           strokeWidth={p.width ?? 1}
           strokeLinejoin="round"
           strokeLinecap="round"
+          opacity={p.opacity}
+          clipPath={p.clip ? `url(#${uid}-${p.key})` : undefined}
         />
       ))}
       {frame.arrows?.map((a, i) => {
