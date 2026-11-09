@@ -1,5 +1,5 @@
 import { type Joint, type Point, type Pose, solve } from './model';
-import { blendPose, orbitPair } from './motion';
+import { blendPose, holdGrips, orbitPair } from './motion';
 
 import { type Part, FIGHTER_COLORS, poseParts, sortParts } from './avatar';
 
@@ -59,7 +59,8 @@ export function lerpFrame(a: Frame, b: Frame, t: number, prev?: Frame, next?: Fr
   const blended = a.poses.map((p, i) =>
     blendPose(same(prev)?.poses[i], p, b.poses[i]!, same(next)?.poses[i], t),
   );
-  const poses = orbitPair(blended, a.poses, b.poses, t) as Frame['poses'];
+  const orbited = orbitPair(blended, a.poses, b.poses, t);
+  const poses = holdGrips(orbited, a.poses, b.poses, a.grips, b.grips, t) as Frame['poses'];
   const near = t < 0.5 ? a : b;
   return { poses, arrows: near.arrows, grips: near.grips, caption: near.caption };
 }

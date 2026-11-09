@@ -106,3 +106,58 @@ export function orbitPair(blended: Pose[], b: Pose[], c: Pose[], t: number): Pos
 }
 
 type Pt = { x: number; y: number };
+
+type GripRef = { fighter: 0 | 1; joint: string };
+
+const CHAIN: Record<string, [Bone, Bone]> = {
+  handL: ['upperArmL', 'forearmL'],
+  handR: ['upperArmR', 'forearmR'],
+  footL: ['thighL', 'shinL'],
+  footR: ['thighR', 'shinR'],
+};
+
+/** Más lejos que esto del otro cuerpo no es un agarre de verdad: no se fuerza. */
+const GRIP_REACH = 24;
+
+/** Articulación del otro luchador más cercana a `p`, y dónde queda `p` respecto a ella. */
+function anchorOf(other: Pose, p: Pt): { joint: string; dx: number; dy: number; d: number } {
+  let best = { joint: 'pelvis', dx: 0, dy: 0, d: Infinity };
+  for (const [joint, q] of Object.entries(solve(other))) {
+    const d = Math.hypot(p.x - q.x, p.y - q.y);
+    if (d < best.d) best = { joint, dx: p.x - q.x, dy: p.y - q.y, d };
+  }
+  return best;
+}
+
+/**
+ * Los agarres que siguen en los dos pasos no se sueltan a mitad del movimiento:
+ * la mano (o el pie) se lleva, doblando el codo o la rodilla, al mismo punto del
+ * otro cuerpo en que estaba, pasando poco a poco de su sitio en `b` al de `c`.
+ */
+export function holdGrips(
+  blended: Pose[],
+  b: Pose[],
+  c: Pose[],
+  gripsB: GripRef[] = [],
+  gripsC: GripRef[] = [],
+  t: number,
+): Pose[] {
+  if (blended.length !== 2 || b.length !== 2 || c.length !== 2) return blended;
+  const out = [...blended];
+  for (const g of gripsB) {
+    const chain = CHAIN[g.joint];
+    if (!chain || !gripsC.some((h) => h.fighter === g.fighter && h.joint === g.joint)) continue;
+    const o = 1 - g.fighter;
+    const end = g.joint as keyof ReturnType<typeof solve>;
+    const atB = anchorOf(b[o]!, solve(b[g.fighter]!)[end]);
+    const atC = anchorOf(c[o]!, solve(c[g.fighter]!)[end]);
+    if (atB.d > GRIP_REACH || atC.d > GRIP_REACH) continue;
+    const now = solve(out[o]!) as Record<string, Pt>;
+    const pb = { x: now[atB.joint]!.x + atB.dx, y: now[atB.joint]!.y + atB.dy };
+    const pc = { x: now[atC.joint]!.x + atC.dx, y: now[atC.joint]!.y + atC.dy };
+    const target = { x: pb.x + (pc.x - pb.x) * t, y: pb.y + (pc.y - pb.y) * t };
+    const pose = out[g.fighter]!;
+    out[g.fighter] = solveTwoBone(pose, chain[0], chain[1], target, currentBend(pose, chain[0], chain[1]));
+  }
+  return out;
+}
